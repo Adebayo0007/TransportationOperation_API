@@ -33,12 +33,18 @@ namespace PTS_DATA.Repository.Implementations
 
         public async Task<IEnumerable<Employee>> GetAllAsync()
         {
-            return await _db.Employees.Include(x => x.ApplicationUser).Where(x => x.IsDeleted == false && x.ApplicationUser.IsDeleted == false).ToListAsync();
+            return await _db.Employees
+                .Include(x => x.ApplicationUser)
+                .Where(x => x.IsDeleted == false && x.ApplicationUser.IsDeleted == false)
+                .ToListAsync();
         }
 
         public async Task<IEnumerable<Employee>> GetByIdAsync(string id)
         {
-            var result = await _db.Employees.Include(x => x.ApplicationUser).Where(x => x.Id == id || x.StaffIdentityCardNumber == id).ToListAsync();
+            var result = await _db.Employees
+                .Include(x => x.ApplicationUser)
+                .Where(x => x.Id == id || x.StaffIdentityCardNumber == id)
+                .ToListAsync();
             return result ?? null;
         }
 
