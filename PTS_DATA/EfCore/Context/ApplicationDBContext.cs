@@ -19,7 +19,21 @@ namespace PTS_DATA.EfCore.Context
             : base(options)
         {
         }
-        //public DbSet<Employee> Employees { get; set; }
+        public DbSet<BusBrandingRequest> BusBrandingRequests { get; set; }
+        public DbSet<BusBranding> BusBrandings { get; set; }
+        public DbSet<Employee> Employees { get; set; }
+        public DbSet<HireVehicleRequest> HireVehicleRequests { get; set; }
+        public DbSet<HireVehicle> HireVehicles { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
+        public DbSet<OtherRequest> OtherRequests { get; set; }
+        public DbSet<StoreAsset> StoreAssets { get; set; }
+        public DbSet<StoreAssetRequest> StoreAssetRequests { get; set; }
+        public DbSet<StoreItem> StoreItems { get; set; }
+        public DbSet<StoreItemRequest> StoreItemRequests { get; set; }
+        public DbSet<Terminal> Terminals { get; set; }
+        public DbSet<Vehicle> vehicles { get; set; }
+
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

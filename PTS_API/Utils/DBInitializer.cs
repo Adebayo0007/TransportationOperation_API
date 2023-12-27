@@ -33,7 +33,12 @@ namespace PTS_API.Utils
                         LastName = "Tijani",
                         ApplicationRoleId = chairmanRole.Id,
                         RoleName = chairmanRole.Name,
+                        PhoneNumber = "080767676576",
+                        PhoneNumberConfirmed = true,
+                        EmailConfirmed = true,
                         DateCreated = DateTime.Now,
+                        DateOfBirth = DateTime.Now,
+                        Gender = "Male"
                         // add other properties as needed
                     };
 
@@ -67,6 +72,11 @@ namespace PTS_API.Utils
                             RoleName = adminRole.Name,
                             ApplicationRoleId = adminRole.Id,
                             DateCreated = DateTime.Now,
+                            PhoneNumber = "80767623576",
+                            PhoneNumberConfirmed = true,
+                            EmailConfirmed = true,
+                            DateOfBirth = DateTime.Now,
+                            Gender = "Male",
                             // add other properties as needed
                         };
 
@@ -74,7 +84,7 @@ namespace PTS_API.Utils
 
                         if (result.Succeeded)
                         {
-                            await _userManager.AddToRoleAsync(adminUser, "Admin");
+                            await _userManager.AddToRoleAsync(adminUser, "Administrator");
                         }
                         else
                         {

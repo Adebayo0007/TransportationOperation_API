@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\PTS_CORE\PTS_CORE.csproj" />
+    <ProjectReference Include="..\PTS_DATA\PTS_DATA.csproj" />
   </ItemGroup>
 
 </Project>

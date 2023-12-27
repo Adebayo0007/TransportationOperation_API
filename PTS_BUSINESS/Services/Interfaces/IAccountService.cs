@@ -1,15 +1,22 @@
 ﻿using PTS_CORE.Domain.DataTransferObject;
 using PTS_CORE.Domain.DataTransferObject.RequestModel.Account;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PTS_BUSINESS.Services.Interfaces
 {
     public interface IAccountService
     {
         Task<LoginResponseModel> Login(LoginRequestModel loginRequestModel);
+        Task<bool> UpdateUserAccount(UserUpdateModel updateModel);
+        Task<bool> DeleteUserAccount(string userId);
+        Task<bool> ActivateUserAccount(string userId);  
+        Task<bool> CreateUserAccount(CreateUserRequestModel model);  
+        Task<bool> CreateRole(CreateRoleRequestModel model);  
+        Task<bool> SendOTPForPasswordReset(string email);  
+        Task<bool> UpdateRefreshToken(string id, string refreshToken);  
+        Task<BaseResponse<bool>> ResetPassword(PasswordResetRequestModel model);  
+        Task<BaseResponse<IEnumerable<ApplicationUserDto>>> GetAllUsers();
+        Task<BaseResponse<IEnumerable<ApplicationRoleDto>>> GetAllRoles();
+        Task<BaseResponse<IEnumerable<ApplicationUserDto>>> GetUserByEmail(string email);
+        Task<BaseResponse<IEnumerable<ApplicationUserDto>>> GetUserById(string Id);  
     }
 }

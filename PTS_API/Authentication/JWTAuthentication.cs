@@ -1,8 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
-using PTS_CORE.Domain.DataTransferObject;
+﻿using Microsoft.IdentityModel.Tokens;
 using PTS_CORE.Domain.DataTransferObject.RequestModel.Account;
-using PTS_CORE.Domain.Entities;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -39,6 +36,7 @@ namespace PTS_API.Authentication
             claims.Add(new Claim(ClaimTypes.NameIdentifier, model.UserId.ToString()));
             claims.Add(new Claim(ClaimTypes.Email, model.Email));
             claims.Add(new Claim(ClaimTypes.Role, model.RoleName));     
+          //  claims.Add(new Claim(ClaimTypes.GivenName, $"{model.FirstName} {model.LastName}"));     
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {

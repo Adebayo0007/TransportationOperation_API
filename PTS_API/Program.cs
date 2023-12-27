@@ -8,6 +8,8 @@ using PTS_BUSINESS.Services.Implementations;
 using PTS_BUSINESS.Services.Interfaces;
 using PTS_CORE.Domain.Entities;
 using PTS_DATA.EfCore.Context;
+using PTS_DATA.Repository.Implementations;
+using PTS_DATA.Repository.Interfaces;
 
 namespace PTS_API
 {
@@ -28,6 +30,9 @@ namespace PTS_API
                 .AllowAnyHeader();
 
             }));
+
+            builder.Services.AddHttpContextAccessor();
+            builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             // Add services to the container.
 
             builder.Services.AddControllers();
@@ -60,6 +65,7 @@ namespace PTS_API
             #endregion
             
             builder.Services.AddEndpointsApiExplorer();
+
             #region Swagger
             builder.Services.AddSwaggerGen(c =>
             {
@@ -92,6 +98,9 @@ namespace PTS_API
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddScoped<DBInitializer>();  //Seeding datas in to the DB
             builder.Services.AddTransient<IAccountService, AccountService>();
+
+            builder.Services.AddTransient<IEmployeeRepository, EmployeeRepository>();
+            builder.Services.AddTransient<IEmployeeService, EmployeeService>();
             builder.Services.AddScoped<IJWTAuthentication, JWTAuthentication>();
             builder.Services.AddRouting(option => option.LowercaseUrls = true);
            /* builder.Services.AddControllers().AddJsonOptions(opt => opt.JsonSerializerOptions.PropertyNamingPolicy = null)
