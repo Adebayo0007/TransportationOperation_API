@@ -19,6 +19,8 @@ namespace PTS_CORE.Domain.DataTransferObject.RequestModel.Vehicle
         [Required]
         public VehicleStatus VehicleStatus { get; set; }
         [Required]
+        public VehicleType? VehicleType { get; set; }
+        [Required]
         public string RegistrationNumber { get; set; }
         [Required]
         public string EngineNumber { get; set; }

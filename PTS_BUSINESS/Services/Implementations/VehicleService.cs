@@ -65,6 +65,7 @@ namespace PTS_BUSINESS.Services.Implementations
                     TerminalId = !string.IsNullOrWhiteSpace(model.DriverId.Trim()) ? model.TerminalId.Trim() : null,
                     OperationType = model.OperationType,
                     VehicleStatus = model.VehicleStatus,
+                    VehicleType = model.VehicleType,
                     RegistrationNumber = !string.IsNullOrWhiteSpace(model.RegistrationNumber.Trim()) ? model.Name.Trim() : null,
                     EngineNumber = !string.IsNullOrWhiteSpace(model.EngineNumber.Trim()) ? model.EngineNumber.Trim() : null,
                     IMEINumber = !string.IsNullOrWhiteSpace(model.IMEINumber.Trim()) ? model.IMEINumber.Trim() : null,
@@ -333,8 +334,9 @@ namespace PTS_BUSINESS.Services.Implementations
                    IsModified = model.IsModified,
                    ModifierName = model.ModifierName,
                   ModifierId = model.ModifierId,
-                  LastModified = model.LastModified
-             };
+                  LastModified = model.LastModified,
+                  VehicleType = model.VehicleType
+            };
         }
     }
 }
