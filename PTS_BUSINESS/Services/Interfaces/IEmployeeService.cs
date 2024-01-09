@@ -14,6 +14,12 @@ namespace PTS_BUSINESS.Services.Interfaces
     {
         Task<bool> Create(CreateEmployeeRequestModel model);
         Task<BaseResponse<IEnumerable<EmployeeResponseModel>>> Get(string id);
-        Task<BaseResponse<IEnumerable<EmployeeResponseModel>>> GetAllEmployees();
+        Task<BaseResponse<IEnumerable<EmployeeResponseModel>>> GetByEmail(string email);
+        Task<BaseResponse<IEnumerable<EmployeeResponseModel>>> GetAllEmployees(CancellationToken cancellationToken = default);
+        Task<BaseResponse<IEnumerable<EmployeeResponseModel>>> GetInactiveEmployees(CancellationToken cancellationToken = default);
+        Task<BaseResponse<IEnumerable<EmployeeResponseModel>>> SearchEmployee(string? keyword,CancellationToken cancellationToken = default);
+        Task<bool> UpdateEmployeeAccount(UpdateEmployeeRequestModel updateModel);
+        Task<bool> ActivateEmployee(string employeeId);
+        Task Delete(string id);
     }
 }

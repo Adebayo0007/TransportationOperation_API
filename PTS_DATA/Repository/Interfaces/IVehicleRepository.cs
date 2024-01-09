@@ -9,5 +9,8 @@ namespace PTS_DATA.Repository.Interfaces
 {
     public interface IVehicleRepository : IBaseRepository<Vehicle>
     {
+        Task<Vehicle> GetModelByIdAsync(string id);
+        Task<IEnumerable<Vehicle>> GetTerminalVehicles(string terminalId,CancellationToken cancellationToken = default);
+        Task<IEnumerable<Vehicle>> InactiveVehicle(CancellationToken cancellationToken = default);
     }
 }

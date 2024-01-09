@@ -12,8 +12,8 @@ using PTS_DATA.EfCore.Context;
 namespace PTS_DATA.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    [Migration("20231227113034_init")]
-    partial class init
+    [Migration("20240109065115_amend")]
+    partial class amend
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -1073,7 +1073,7 @@ namespace PTS_DATA.Migrations
                     b.Property<int>("NumberOfSeat")
                         .HasColumnType("int");
 
-                    b.Property<int>("OperationType")
+                    b.Property<int?>("OperationType")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("PurchaseDate")
@@ -1089,11 +1089,17 @@ namespace PTS_DATA.Migrations
                     b.Property<DateTime?>("RoadWorthinessExpirationDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("TerminalId")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("VehicleModel")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("VehicleStatus")
+                    b.Property<int?>("VehicleStatus")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("VehicleType")
                         .HasColumnType("int");
 
                     b.HasKey("Id");

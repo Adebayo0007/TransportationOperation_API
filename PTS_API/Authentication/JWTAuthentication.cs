@@ -42,7 +42,7 @@ namespace PTS_API.Authentication
             {
                 Subject = new ClaimsIdentity(claims),
                 IssuedAt = DateTime.Now,
-                Expires = DateTime.Now.AddMinutes(5),
+                Expires = DateTime.Now.AddHours(8),
                 SigningCredentials = new SigningCredentials(
                     new SymmetricSecurityKey(tokenKey),
                     SecurityAlgorithms.HmacSha256Signature),

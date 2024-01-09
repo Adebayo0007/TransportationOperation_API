@@ -1,38 +1,70 @@
-﻿using PTS_CORE.Domain.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using PTS_CORE.Domain.Entities;
+using PTS_DATA.EfCore.Context;
 using PTS_DATA.Repository.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PTS_DATA.Repository.Implementations
 {
     public class VehicleRepository : IVehicleRepository
     {
-        public Task<bool> CreateAsync(Vehicle entity)
+        private readonly ApplicationDBContext _db;
+        public VehicleRepository(ApplicationDBContext db)
         {
-            throw new NotImplementedException();
+            _db = db;
+        }
+        public async Task<bool> CreateAsync(Vehicle entity)
+        {
+            if (entity == null) throw new ArgumentNullException();
+            var response = await _db.vehicles.AddAsync(entity);
+            if (response.Entity == null) return false;
+            await _db.SaveChangesAsync();
+            return true;
         }
 
-        public Task DeleteAsync(Vehicle entity)
+        public async Task DeleteAsync()
         {
-            throw new NotImplementedException();
+            await _db.SaveChangesAsync();
         }
 
-        public Task<IEnumerable<Vehicle>> GetAllAsync()
+        public async Task<IEnumerable<Vehicle>> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            return await _db.vehicles
+              .Where(x => x.IsDeleted == false)
+              .ToListAsync(cancellationToken);
         }
 
-        public Task<IEnumerable<Vehicle>> GetByIdAsync(string id)
+        public async Task<IEnumerable<Vehicle>> GetByIdAsync(string id)
         {
-            throw new NotImplementedException();
+            var result = await _db.vehicles
+              .Where(x => x.Id.ToLower() == id.ToLower() || x.RegistrationNumber.ToLower() == id.ToLower())
+              .ToListAsync();
+            return result ?? null;
         }
 
-        public Task UpdateAsync(Vehicle entity)
+        public async Task<Vehicle> GetModelByIdAsync(string id)
         {
-            throw new NotImplementedException();
+            return await _db.vehicles
+                .SingleOrDefaultAsync(x => x.Id.ToLower() == id.ToLower() || x.RegistrationNumber.ToLower() == id.ToLower());
+        }
+
+        public async Task<IEnumerable<Vehicle>> GetTerminalVehicles(string terminalId, CancellationToken cancellationToken = default)
+        {
+            var result = await _db.vehicles
+              .Where(x => x.TerminalId == terminalId)
+              .ToListAsync(cancellationToken);
+            return result ?? null;
+        }
+
+        public async Task<IEnumerable<Vehicle>> InactiveVehicle(CancellationToken cancellationToken = default)
+        {
+            return await _db.vehicles
+              .Where(x => x.IsDeleted == true)
+              .ToListAsync(cancellationToken);
+        }
+
+        public async Task UpdateAsync(Vehicle entity)
+        {
+            await _db.SaveChangesAsync();
         }
     }
 }

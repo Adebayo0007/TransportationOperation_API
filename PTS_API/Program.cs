@@ -1,6 +1,7 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using PTS_API.Authentication;
 using PTS_API.Utils;
@@ -10,6 +11,7 @@ using PTS_CORE.Domain.Entities;
 using PTS_DATA.EfCore.Context;
 using PTS_DATA.Repository.Implementations;
 using PTS_DATA.Repository.Interfaces;
+using System.Text;
 
 namespace PTS_API
 {
@@ -95,20 +97,56 @@ namespace PTS_API
             });
             #endregion
 
+            #region Dependencies
+
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddScoped<DBInitializer>();  //Seeding datas in to the DB
-            builder.Services.AddTransient<IAccountService, AccountService>();
+            builder.Services.AddScoped<IAccountService, AccountService>();
 
-            builder.Services.AddTransient<IEmployeeRepository, EmployeeRepository>();
-            builder.Services.AddTransient<IEmployeeService, EmployeeService>();
+            builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+            builder.Services.AddScoped<IEmployeeService, EmployeeService>();
+
+            builder.Services.AddScoped<IVehicleRepository, VehicleRepository>();
+            builder.Services.AddScoped<IVehicleService, VehicleService>();
+
+            builder.Services.AddScoped<ITerminalRepository, TerminalRepository>();
+            builder.Services.AddScoped<ITerminalService, TerminalService>();
+
+            builder.Services.AddScoped<IStoreItemRepository, StoreItemRepository>();
+            builder.Services.AddScoped<IStoreItemService, StoreItemService>();
+
+            //builder.Services.AddScoped<ITokenInvalidationService, TokenInvalidationService>();
+
             builder.Services.AddScoped<IJWTAuthentication, JWTAuthentication>();
             builder.Services.AddRouting(option => option.LowercaseUrls = true);
-           /* builder.Services.AddControllers().AddJsonOptions(opt => opt.JsonSerializerOptions.PropertyNamingPolicy = null)
-                .AddNewtonsoftJson(opt =>
+            /* builder.Services.AddControllers().AddJsonOptions(opt => opt.JsonSerializerOptions.PropertyNamingPolicy = null)
+                 .AddNewtonsoftJson(opt =>
+                 {
+                     opt.SerializerSettings.ContractResolver = new DefaultContractResolver();
+                     opt.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+                 });*/
+
+
+           builder.Services.AddAuthentication(x =>
+            {
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+                .AddJwtBearer(x =>
                 {
-                    opt.SerializerSettings.ContractResolver = new DefaultContractResolver();
-                    opt.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
-                });*/
+                    x.RequireHttpsMetadata = false;
+                    x.SaveToken = true;
+                    x.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetValue<string>("Key"))),
+                        ValidateIssuer = false,
+                        ValidateAudience = false
+                    };
+
+                });
+
+            #endregion
 
 
             var app = builder.Build();

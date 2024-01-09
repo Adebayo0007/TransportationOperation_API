@@ -1,22 +1,32 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Distributed;
 using PTS_API.Authentication;
 using PTS_BUSINESS.Services.Interfaces;
+using PTS_CORE.Domain.DataTransferObject;
 using PTS_CORE.Domain.DataTransferObject.RequestModel.Account;
 
 namespace PTS_API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class AccountController : ControllerBase
     {
         private readonly IAccountService _accountService;
         private readonly IJWTAuthentication _jwtAuth;
+       // private readonly IDistributedCache _distributedCache;
+        //private readonly ITokenInvalidationService _tokenInvalidationService;
 
-        public AccountController(IAccountService accountService, IJWTAuthentication jwtAuth)
+        public AccountController(IAccountService accountService, IJWTAuthentication jwtAuth 
+            //IDistributedCache distributedCache, ITokenInvalidationService tokenInvalidationService
+            )
         {
             _accountService = accountService;
             _jwtAuth = jwtAuth;
+            //_distributedCache = distributedCache;
+            //_tokenInvalidationService = tokenInvalidationService;
         }
 
 
@@ -30,7 +40,7 @@ namespace PTS_API.Controllers
                 var result = await _accountService.CreateUserAccount(model);
                 if (result == true)
                 {
-                    return Ok(new { Message = "Congratulations...!.User sign up successfully" });
+                    return Ok(new { Message = "Congratulations....! User sign up successfully"});
                 }
                 return BadRequest(result);
             }
@@ -59,7 +69,7 @@ namespace PTS_API.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
+        [AllowAnonymous]
         [HttpPost]
         [Route("Signin")]
         public async Task<IActionResult> Login(LoginRequestModel model)
@@ -72,6 +82,22 @@ namespace PTS_API.Controllers
                 {
                     result.AccessToken = _jwtAuth.GenerateToken(result.ApplicationUserDto);
                     result.RefreshToken = _jwtAuth.GenerateRefreshToken();
+
+                    //revoving the token from cache as invalid token
+                  //  await _tokenInvalidationService.ValidateTokenAsync(result.AccessToken);
+
+                    // Storing the token on server side for future requests
+                    var accessToken = result.AccessToken;
+
+                    Response.Cookies.Append($"pts_access_token", accessToken, new CookieOptions
+                    {
+                        HttpOnly = true,
+                        Secure = true, // Set to true if using HTTPS
+                      //  SameSite = SameSiteMode.None, // Adjust as needed
+                       // Expires = DateTimeOffset.UtcNow.AddHours(1), // Set expiration time
+                       // Domain = "yourdomain.com", // Specify the domain if needed
+                      //  Path = "/yourpath", // Specify the path if needed
+                    });
                     var response = await _accountService.UpdateRefreshToken(result.ApplicationUserDto.UserId, result.RefreshToken);
                     if (response == true)
                         return Ok(result);
@@ -191,14 +217,54 @@ namespace PTS_API.Controllers
             }
 
         }
-
+       // [AllowAnonymous]
         [HttpGet]
         [Route("GetAllUsers")]
         public async Task<IActionResult> GetAllUsers()
         {
             try
             {
-                var result = await _accountService.GetAllUsers();
+                   var result = await _accountService.GetAllUsers();
+                
+                if (result.IsSuccess == true)
+                {
+                    return Ok(result);
+                }
+                return BadRequest(new { Message = "internal error, please try again later..." });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("SearchUsers/{keyword}")]
+        public async Task<IActionResult> SearchUsers(string? keyword= null)
+        {
+            try
+            {
+                var result = await _accountService.SearchUsers(keyword);
+
+                if (result.IsSuccess == true)
+                {
+                    return Ok(result);
+                }
+                return BadRequest(new { Message = "internal error, please try again later..." });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("GetAllDeactivatedUsers")]
+        public async Task<IActionResult> GetAllDeactivatedUsers()
+        {
+            try
+            {
+                var result = await _accountService.GetAllDeactivatedUsers();
                 if (result.IsSuccess == true)
                 {
                     return Ok(result);
@@ -229,7 +295,7 @@ namespace PTS_API.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
+        [AllowAnonymous]
         [HttpPost]
         [Route("ForgotPassword/{mail}")]
         public async Task<IActionResult> ForgotPassword(string mail)
@@ -248,7 +314,7 @@ namespace PTS_API.Controllers
             else return BadRequest(new { Message = "user email can't be null" });
         }
 
-        // [AllowAnonymous]
+        [AllowAnonymous]
         [HttpPost]
         [Route("ResetPassword")]
         public async Task<IActionResult> ResetPassword(PasswordResetRequestModel model)
@@ -268,10 +334,14 @@ namespace PTS_API.Controllers
             else return BadRequest(new { Message = "bad Request" });
         }
 
-
-
-
-
+       /* [HttpGet]
+        [Route("Logout")]
+        public async Task<IActionResult> Logout()
+        {
+           // var result = await _tokenInvalidationService.IsTokenInvalidAsync(await _distributedCache.GetStringAsync("invalid"));
+            //await _tokenInvalidationService.InvalidateTokenAsync(result);
+            return Ok();
+        }*/
 
     }
 }

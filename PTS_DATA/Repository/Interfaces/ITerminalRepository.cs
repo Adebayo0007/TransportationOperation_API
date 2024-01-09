@@ -9,5 +9,8 @@ namespace PTS_DATA.Repository.Interfaces
 {
     public interface ITerminalRepository : IBaseRepository<Terminal>
     {
+        Task<Terminal> GetModelByIdAsync(string id);
+        Task<IEnumerable<Terminal>> InactiveTerminal(CancellationToken cancellationToken = default);
+        Task<IEnumerable<Terminal>> SearchTerminal(string? keyword= null, CancellationToken cancellationToken = default);
     }
 }

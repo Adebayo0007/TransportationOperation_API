@@ -18,8 +18,8 @@ namespace PTS_BUSINESS.Services.Implementations
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public AccountService(
-            SignInManager<ApplicationUser> signInManager, 
-            UserManager<ApplicationUser> userManager, 
+            SignInManager<ApplicationUser> signInManager,
+            UserManager<ApplicationUser> userManager,
             RoleManager<ApplicationRole> roleManager,
             IHttpContextAccessor httpContextAccessor)
         {
@@ -181,16 +181,17 @@ namespace PTS_BUSINESS.Services.Implementations
                 try
                 {
                     var user = await _userManager.FindByIdAsync(updateModel.UserId.Trim());
+                    var role = updateModel.RoleId != null? await _roleManager.FindByIdAsync(updateModel.RoleId.Trim()) : null;
 
                     if (user == null)
                         return false;
 
                     // Update user properties based on your model
-                    user.FirstName = !string.IsNullOrWhiteSpace(updateModel.FirstName.Trim()) ? updateModel.FirstName.Trim(): user.FirstName;
+                    user.FirstName = !string.IsNullOrWhiteSpace(updateModel.FirstName.Trim()) ? updateModel.FirstName.Trim() : user.FirstName;
                     user.LastName = !string.IsNullOrWhiteSpace(updateModel.LastName.Trim()) ? updateModel.LastName.Trim() : user.LastName;
                     user.Email = !string.IsNullOrWhiteSpace(updateModel.Email.Trim()) ? updateModel.Email.Trim() : user.Email;
                     user.UserName = !string.IsNullOrWhiteSpace(updateModel.Email.Trim()) ? updateModel.Email.Trim() : user.Email;
-                    user.RoleName = !string.IsNullOrWhiteSpace(updateModel.RoleName.Trim()) ? updateModel.RoleName.Trim() : user.RoleName;
+                    user.RoleName = role != null ? role.Name : user.RoleName;
                     user.PhoneNumber = !string.IsNullOrWhiteSpace(updateModel.Phonenumber.Trim()) ? updateModel.Phonenumber.Trim() : user.PhoneNumber;
                     user.IsModified = true;
                     user.LastModified = DateTime.Now;
@@ -214,9 +215,9 @@ namespace PTS_BUSINESS.Services.Implementations
 
         public async Task<bool> CreateUserAccount(CreateUserRequestModel model)
         {
-            if(model != null)
+            if (model != null)
             {
-                if(await _userManager.FindByEmailAsync(model.Email.Trim()) != null) return false;
+                if (await _userManager.FindByEmailAsync(model.Email.Trim()) != null) return false;
                 var role = await _roleManager.FindByNameAsync(model.RoleName.Trim());
                 var user = new ApplicationUser
                 {
@@ -228,8 +229,8 @@ namespace PTS_BUSINESS.Services.Implementations
                     RoleName = model.RoleName.Trim(),
                     DateCreated = DateTime.Now,
                     PhoneNumber = model.Phonenumber.Trim(),
-                    PhoneNumberConfirmed = !string.IsNullOrWhiteSpace(model.Phonenumber.Trim()) ? true: false,
-                    EmailConfirmed = !string.IsNullOrWhiteSpace(model.Email.Trim()) ? true: false,
+                    PhoneNumberConfirmed = !string.IsNullOrWhiteSpace(model.Phonenumber.Trim()) ? true : false,
+                    EmailConfirmed = !string.IsNullOrWhiteSpace(model.Email.Trim()) ? true : false,
                     DateOfBirth = model.DateOfBirth,
                     Gender = model.Gender,
                     TerminalId = model.TerminalId.Trim() ?? string.Empty,
@@ -258,10 +259,11 @@ namespace PTS_BUSINESS.Services.Implementations
         {
             if (model != null)
             {
-               
+
                 if (await _roleManager.RoleExistsAsync(model.Name.Trim())) return false;
-                var role = new ApplicationRole { 
-                    Name = model.Name.Trim(), 
+                var role = new ApplicationRole
+                {
+                    Name = model.Name.Trim(),
                     Description = model.Description,
                     CreatorId = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? null,
                     CreatorName = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.Email)?.Value ?? null
@@ -283,11 +285,11 @@ namespace PTS_BUSINESS.Services.Implementations
                 return false;
         }
 
-        public async Task<BaseResponse<IEnumerable<ApplicationUserDto>>> GetAllUsers()
+        public async Task<BaseResponse<IEnumerable<ApplicationUserDto>>> SearchUsers(string? keyword)
         {
             try
             {
-                var user = await _userManager.Users.ToListAsync();
+                var user = await _userManager.Users.Where(x => x.PhoneNumber.Contains(keyword) || x.Email.Contains(keyword)).OrderByDescending(x => x.DateCreated).ToListAsync();
                 if (user != null)
                     return new BaseResponse<IEnumerable<ApplicationUserDto>>
                     {
@@ -295,12 +297,62 @@ namespace PTS_BUSINESS.Services.Implementations
                         Message = $"users retrieved successfully",
                         Data = user.Select(x => ReturnApplicationUserDto(x)).ToList()
                     };
-                    else return new BaseResponse<IEnumerable<ApplicationUserDto>>
+                else return new BaseResponse<IEnumerable<ApplicationUserDto>>
+                {
+                    IsSuccess = false,
+                    Message = $"users failed to retrieved successfully",
+                };
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+
+
+        public async Task<BaseResponse<IEnumerable<ApplicationUserDto>>> GetAllUsers()
+        {
+            try
+            {
+                var user = await _userManager.Users.Where(x => x.IsDeleted == false).OrderByDescending(x => x.DateCreated).ToListAsync();
+                if (user != null)
+                    return new BaseResponse<IEnumerable<ApplicationUserDto>>
                     {
-                        IsSuccess = false,
-                        Message = $"users failed to retrieved successfully",
+                        IsSuccess = true,
+                        Message = $"users retrieved successfully",
+                        Data = user.Select(x => ReturnApplicationUserDto(x)).ToList()
                     };
-                }
+                else return new BaseResponse<IEnumerable<ApplicationUserDto>>
+                {
+                    IsSuccess = false,
+                    Message = $"users failed to retrieved successfully",
+                };
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public async Task<BaseResponse<IEnumerable<ApplicationUserDto>>> GetAllDeactivatedUsers()
+        {
+            try
+            {
+                var user = await _userManager.Users.Where(x => x.IsDeleted == true).OrderBy(x => x.DateCreated).ToListAsync();
+                if (user != null)
+                    return new BaseResponse<IEnumerable<ApplicationUserDto>>
+                    {
+                        IsSuccess = true,
+                        Message = $"users retrieved successfully",
+                        Data = user.Select(x => ReturnApplicationUserDto(x)).ToList()
+                    };
+                else return new BaseResponse<IEnumerable<ApplicationUserDto>>
+                {
+                    IsSuccess = false,
+                    Message = $"users failed to retrieved successfully",
+                };
+            }
             catch (Exception ex)
             {
                 throw;
@@ -312,7 +364,7 @@ namespace PTS_BUSINESS.Services.Implementations
             try
             {
 
-                if(email == null) { throw new NullReferenceException(); }
+                if (email == null) { throw new NullReferenceException(); }
                 var user = await _userManager.Users.Where(x => x.Email.Trim().ToLower() == email.Trim().ToLower()).ToListAsync();
                 return new BaseResponse<IEnumerable<ApplicationUserDto>>
                 {
@@ -321,7 +373,7 @@ namespace PTS_BUSINESS.Services.Implementations
                     Data = user.Select(x => ReturnApplicationUserDto(x)).ToList()
                 };
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 throw;
             }
@@ -351,7 +403,7 @@ namespace PTS_BUSINESS.Services.Implementations
         {
             try
             {
-                var role = await _roleManager.Roles.ToListAsync();
+                var role = await _roleManager.Roles.Where(x =>x.IsDeleted == false).ToListAsync();
                 if (role != null)
                     return new BaseResponse<IEnumerable<ApplicationRoleDto>>
                     {
@@ -389,7 +441,7 @@ namespace PTS_BUSINESS.Services.Implementations
                 }
                 else return false;
             }
-            catch(Exception ex) { throw; }
+            catch (Exception ex) { throw; }
         }
 
         public async Task<BaseResponse<bool>> ResetPassword(PasswordResetRequestModel model)
@@ -402,7 +454,7 @@ namespace PTS_BUSINESS.Services.Implementations
                 };
 
             var user = await _userManager.FindByEmailAsync(model.Email.Trim());
-            if(user.IsDeleted == true) return new BaseResponse<bool>
+            if (user.IsDeleted == true) return new BaseResponse<bool>
             {
                 Message = "Account has been deactivated...",
                 IsSuccess = false
@@ -477,8 +529,8 @@ namespace PTS_BUSINESS.Services.Implementations
                 ModifierName = model.ModifierName,
                 ModifierId = model.ModifierId,
                 LastModified = model.LastModified,
-               
-               
+
+
             };
         }
 
@@ -506,11 +558,11 @@ namespace PTS_BUSINESS.Services.Implementations
                 DateOfBirth = model.DateOfBirth,
                 Gender = model.Gender,
                 TerminalId = model.TerminalId
-                
-               
+
+
             };
         }
 
-      
+
     }
 }

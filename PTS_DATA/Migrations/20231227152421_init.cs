@@ -304,6 +304,7 @@ namespace PTS_DATA.Migrations
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     DriverId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    TerminalId = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     OperationType = table.Column<int>(type: "int", nullable: false),
                     VehicleStatus = table.Column<int>(type: "int", nullable: false),
                     RegistrationNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),

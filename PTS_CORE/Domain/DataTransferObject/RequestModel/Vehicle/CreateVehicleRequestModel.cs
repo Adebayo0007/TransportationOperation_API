@@ -1,21 +1,33 @@
 ﻿using PTS_CORE.Domain.Entities.Enum;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace PTS_CORE.Domain.Entities
+namespace PTS_CORE.Domain.DataTransferObject.RequestModel.Vehicle
 {
-    public class Vehicle : BaseEntity
+    public class CreateVehicleRequestModel
     {
-        public string Id { get; set; } = Guid.NewGuid().ToString().Substring(0, 7);
-        public string Name { get; set; }  
+        [Required]
+        public string Name { get; set; }
         public string? DriverId { get; set; }
         public string? TerminalId { get; set; }
-        public OperationType? OperationType { get; set; }
-        public VehicleStatus? VehicleStatus { get; set; }
-        public VehicleType? VehicleType { get; set; }
+        [Required]
+        public OperationType OperationType { get; set; }
+        [Required]
+        public VehicleStatus VehicleStatus { get; set; }
+        [Required]
         public string RegistrationNumber { get; set; }
+        [Required]
         public string EngineNumber { get; set; }
         public string? IMEINumber { get; set; }
+        [Required]
         public string VehicleModel { get; set; }
+        [Required]
         public int NumberOfSeat { get; set; }
+        [Required]
         public DateTime PurchaseDate { get; set; }
         public DateTime? LicenseDate { get; set; }
         public DateTime? LicenseExpirationDate { get; set; }

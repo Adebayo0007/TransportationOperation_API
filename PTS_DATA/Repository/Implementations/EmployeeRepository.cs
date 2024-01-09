@@ -26,26 +26,60 @@ namespace PTS_DATA.Repository.Implementations
             return true;
         }
 
-        public async Task DeleteAsync(Employee entity)
+        public async Task DeleteAsync()
         {
             await _db.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<Employee>> GetAllAsync()
+        public async Task<IEnumerable<Employee>> GetAllAsync(CancellationToken cancellationToken = default)
         {
             return await _db.Employees
                 .Include(x => x.ApplicationUser)
                 .Where(x => x.IsDeleted == false && x.ApplicationUser.IsDeleted == false)
+                .ToListAsync(cancellationToken);
+        }
+
+
+        public async Task<IEnumerable<Employee>> GetByEmailAsync(string email)
+        {
+            var result = await _db.Employees
+                .Include(x => x.ApplicationUser)
+                .Where(x => x.ApplicationUser.Email.ToLower() == email.ToLower())
                 .ToListAsync();
+            return result ?? null;
         }
 
         public async Task<IEnumerable<Employee>> GetByIdAsync(string id)
         {
             var result = await _db.Employees
                 .Include(x => x.ApplicationUser)
-                .Where(x => x.Id == id || x.StaffIdentityCardNumber == id)
+                .Where(x => x.Id.ToLower() == id.ToLower() || x.StaffIdentityCardNumber.ToLower() == id.ToLower())
                 .ToListAsync();
             return result ?? null;
+        }
+
+        public async Task<Employee> GetModelByIdAsync(string id)
+        {
+            return await _db.Employees.Include(x => x.ApplicationUser)
+                .SingleOrDefaultAsync(x => x.Id.ToLower() == id.ToLower() || x.StaffIdentityCardNumber.ToLower() == id.ToLower());
+        }
+
+        public async Task<IEnumerable<Employee>> InactiveEmployees(CancellationToken cancellationToken = default)
+        {
+            return await _db.Employees
+               .Include(x => x.ApplicationUser)
+               .Where(x => x.IsDeleted == true && x.ApplicationUser.IsDeleted == true)
+               .ToListAsync(cancellationToken);
+        }
+
+        public async Task<IEnumerable<Employee>> SearchEmployees(string? keyword, CancellationToken cancellationToken = default)
+        {
+            return await _db.Employees
+              .Include(x => x.ApplicationUser)
+              .Where(x => x.StaffIdentityCardNumber.ToLower() == keyword.ToLower() || 
+                     x.ApplicationUser.Email.ToLower() == keyword.ToLower() || 
+                     x.ApplicationUser.PhoneNumber.ToLower() == keyword.ToLower())
+              .ToListAsync(cancellationToken);
         }
 
         public async Task UpdateAsync(Employee entity)

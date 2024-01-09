@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PTS_CORE.Domain.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -11,9 +12,9 @@ namespace PTS_DATA.Repository.Interfaces
     {
         Task<bool> CreateAsync(T entity);
         Task<IEnumerable<T>> GetByIdAsync(string id);
-        Task<IEnumerable<T>> GetAllAsync();
+        Task<IEnumerable<T>> GetAllAsync(CancellationToken cancellationToken = default);
         Task UpdateAsync(T entity);
-        Task DeleteAsync(T entity);
+        Task DeleteAsync();
        // Task<T> GetByAnyAsync(Func<T,bool> any);
     }
 }

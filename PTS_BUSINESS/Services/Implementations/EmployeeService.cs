@@ -1,9 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using PTS_BUSINESS.Services.Interfaces;
 using PTS_CORE.Domain.DataTransferObject;
-using PTS_CORE.Domain.DataTransferObject.RequestModel.Account;
 using PTS_CORE.Domain.DataTransferObject.RequestModel.Employee;
 using PTS_CORE.Domain.Entities;
 using PTS_DATA.Repository.Interfaces;
@@ -82,6 +80,49 @@ namespace PTS_BUSINESS.Services.Implementations
                 return false;
         }
 
+        public async Task<bool> ActivateEmployee(string employeeId)
+        {
+
+            if (employeeId != null)
+            {
+                try
+                {
+                    var employee = await _employeeRepository.GetModelByIdAsync(employeeId.Trim());
+
+                    if (employee == null)
+                        return false;
+                    employee.IsDeleted = false;
+                    employee.ApplicationUser.IsDeleted = false;
+                    employee.ApplicationUser.IsModified = true;
+                    employee.ApplicationUser.LastModified = DateTime.Now;
+                    employee.ApplicationUser.ModifierId = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? null;
+                    employee.ApplicationUser.ModifierName = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.Email)?.Value ?? null;
+                    employee.IsModified = true;
+                    employee.LastModified = DateTime.Now;
+                    employee.ModifierId = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? null;
+                    employee.ModifierName = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.Email)?.Value ?? null;
+
+                    // Update other properties as needed
+                    await _employeeRepository.UpdateAsync(employee);
+                    return true;
+                }
+                catch (Exception ex)
+                { throw; }
+            }
+            else return false;
+        }
+
+        public async Task Delete(string id)
+        {
+            if(id != null)
+            {
+                var employee = await _employeeRepository.GetModelByIdAsync(id.Trim());
+                employee.IsDeleted = true;
+                employee.ApplicationUser.IsDeleted = true;  
+                await _employeeRepository.DeleteAsync();
+            }
+        }
+
         public async Task<BaseResponse<IEnumerable<EmployeeResponseModel>>> Get(string id)
         {
             try
@@ -108,11 +149,47 @@ namespace PTS_BUSINESS.Services.Implementations
             }
         }
 
-        public async Task<BaseResponse<IEnumerable<EmployeeResponseModel>>> GetAllEmployees()
+        public async Task<BaseResponse<IEnumerable<EmployeeResponseModel>>> GetAllEmployees(CancellationToken cancellationToken = default)
         {
             try
             {
-                var employees = await _employeeRepository.GetAllAsync();
+                var employees = await _employeeRepository.GetAllAsync(cancellationToken);
+
+                if (employees != null)
+                {
+                    return new BaseResponse<IEnumerable<EmployeeResponseModel>>
+                    {
+                        IsSuccess = true,
+                        Message = $"Employees retrieved successfully",
+                        Data = employees.Select(x => ReturnEmployeeResponseModel(x)).ToList()
+                    };
+                }
+                else
+                {
+                    return new BaseResponse<IEnumerable<EmployeeResponseModel>>
+                    {
+                        IsSuccess = false,
+                        Message = $"Employees failed to retrieve successfully",
+                    };
+                }
+            }
+            catch (Exception ex)
+            {
+                // Handle exceptions appropriately
+                return new BaseResponse<IEnumerable<EmployeeResponseModel>>
+                {
+                    IsSuccess = false,
+                    Message = $"An error occurred while retrieving employees: {ex.Message}",
+                };
+            }
+        }
+
+
+        public async Task<BaseResponse<IEnumerable<EmployeeResponseModel>>> GetInactiveEmployees(CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var employees = await _employeeRepository.InactiveEmployees(cancellationToken);
                 if (employees != null)
                     return new BaseResponse<IEnumerable<EmployeeResponseModel>>
                     {
@@ -129,6 +206,112 @@ namespace PTS_BUSINESS.Services.Implementations
             catch (Exception ex)
             {
                 throw;
+            }
+        }
+
+        public async Task<bool> UpdateEmployeeAccount(UpdateEmployeeRequestModel updateModel)
+        {
+            if (updateModel != null)
+            {
+                try
+                {
+                    var employee = await _employeeRepository.GetModelByIdAsync(updateModel.EmployeeId.Trim());
+                    ApplicationRole role = null;
+                    if(updateModel.RoleName != "" && updateModel.RoleName != " " && updateModel.RoleName != null)
+                    {
+                       role = await _roleManager.FindByNameAsync(updateModel.RoleName.Trim());
+                    }
+
+                    if (employee == null)
+                        return false;
+
+                    // Update user properties based on your model
+                    employee.ApplicationUser.FirstName = !string.IsNullOrWhiteSpace(updateModel.FirstName.Trim()) ? updateModel.FirstName.Trim() : employee.ApplicationUser.FirstName;
+                    employee.ApplicationUser.LastName = !string.IsNullOrWhiteSpace(updateModel.LastName.Trim()) ? updateModel.LastName.Trim() : employee.ApplicationUser.LastName;
+                    employee.ApplicationUser.Email = !string.IsNullOrWhiteSpace(updateModel.Email.Trim()) ? updateModel.Email.Trim() : employee.ApplicationUser.Email;
+                    employee.ApplicationUser.UserName = !string.IsNullOrWhiteSpace(updateModel.Email.Trim()) ? updateModel.Email.Trim() : employee.ApplicationUser.Email;
+                    employee.ApplicationUser.RoleName = role != null ? role.Name : employee.ApplicationUser.RoleName;
+                    employee.ApplicationUser.ApplicationRoleId = role != null ? role.Id : employee.ApplicationUser.ApplicationRoleId;
+                    employee.ApplicationUser.PhoneNumber = !string.IsNullOrWhiteSpace(updateModel.Phonenumber.Trim()) ? updateModel.Phonenumber.Trim() : employee.ApplicationUser.PhoneNumber;
+                    employee.TerminalId = updateModel.TerminalId != null ? updateModel.TerminalId.Trim() : employee.TerminalId;
+                    employee.StaffIdentityCardNumber = !string.IsNullOrWhiteSpace(updateModel.StaffIdentityCardNumber.Trim()) ? updateModel.StaffIdentityCardNumber.Trim() : employee.StaffIdentityCardNumber;
+                    employee.ApplicationUser.IsModified = true;
+                    employee.ApplicationUser.LastModified = DateTime.Now;
+                    employee.ApplicationUser.ModifierId = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? null;
+                    employee.ApplicationUser.ModifierName = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.Email)?.Value ?? null;
+                    employee.IsModified = true;
+                    employee.LastModified = DateTime.Now;
+                    employee.ModifierId = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? null;
+                    employee.ModifierName = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.Email)?.Value ?? null;
+
+                    // Update other properties as needed
+                    await _employeeRepository.UpdateAsync(employee);
+                        return true;
+                }
+                catch (Exception ex)
+                { throw; }
+            }
+            else return false;
+        }
+
+        public async Task<BaseResponse<IEnumerable<EmployeeResponseModel>>> GetByEmail(string email)
+        {
+            try
+            {
+
+                if (email.Trim() == null) { throw new NullReferenceException(); }
+                var employee = await _employeeRepository.GetByEmailAsync(email.Trim());
+                if (employee == null) return new BaseResponse<IEnumerable<EmployeeResponseModel>>
+                {
+                    IsSuccess = false,
+                    Message = $"employee having  email {email} is not found"
+                };
+                else
+                    return new BaseResponse<IEnumerable<EmployeeResponseModel>>
+                    {
+                        IsSuccess = true,
+                        Message = $"employeer having email {email} retrieved successfully",
+                        Data = employee.Select(x => ReturnEmployeeResponseModel(x)).ToList()
+                    };
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public async Task<BaseResponse<IEnumerable<EmployeeResponseModel>>> SearchEmployee(string? keyword, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var employees = await _employeeRepository.SearchEmployees(keyword,cancellationToken);
+
+                if (employees != null)
+                {
+                    return new BaseResponse<IEnumerable<EmployeeResponseModel>>
+                    {
+                        IsSuccess = true,
+                        Message = $"Employees retrieved successfully",
+                        Data = employees.Select(x => ReturnEmployeeResponseModel(x)).ToList()
+                    };
+                }
+                else
+                {
+                    return new BaseResponse<IEnumerable<EmployeeResponseModel>>
+                    {
+                        IsSuccess = false,
+                        Message = $"Employees failed to retrieve successfully",
+                    };
+                }
+            }
+            catch (Exception ex)
+            {
+                // Handle exceptions appropriately
+                return new BaseResponse<IEnumerable<EmployeeResponseModel>>
+                {
+                    IsSuccess = false,
+                    Message = $"An error occurred while retrieving employees: {ex.Message}",
+                };
             }
         }
 
@@ -167,5 +350,6 @@ namespace PTS_BUSINESS.Services.Implementations
             };
         }
 
+       
     }
 }

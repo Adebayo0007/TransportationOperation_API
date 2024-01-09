@@ -1,33 +1,33 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using PTS_BUSINESS.Services.Implementations;
 using PTS_BUSINESS.Services.Interfaces;
-using PTS_CORE.Domain.DataTransferObject.RequestModel.Account;
 using PTS_CORE.Domain.DataTransferObject.RequestModel.Employee;
+using PTS_CORE.Domain.DataTransferObject.RequestModel.Vehicle;
 
 namespace PTS_API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
-    public class EmployeeController : ControllerBase
+    public class VehicleController : ControllerBase
     {
-        private readonly IEmployeeService _employeeService;
-        public EmployeeController(IEmployeeService employeeService)
+        private readonly IVehicleService _vehicleService;
+        public VehicleController(IVehicleService vehicleService)
         {
-            _employeeService = employeeService;
+            _vehicleService = vehicleService;
         }
         [HttpPost]
-        [Route("AddEmployee")]
-        public async Task<IActionResult> AddEmployee(CreateEmployeeRequestModel model)
+        [Route("AddVehicle")]
+        public async Task<IActionResult> AddVehicle(CreateVehicleRequestModel model)
         {
             try
             {
                 if (!ModelState.IsValid) { return BadRequest("Your credentials are not valid, please check your inputs"); }
-                var result = await _employeeService.Create(model);
+                var result = await _vehicleService.Create(model);
                 if (result == true)
                 {
-                    return Ok(new { Message = "Congratulations...! Employee created successfully" });
+                    return Ok(new { Message = "Congratulations...! Vehicle created successfully" });
                 }
                 return BadRequest(result);
             }
@@ -38,13 +38,13 @@ namespace PTS_API.Controllers
         }
 
         [HttpGet]
-        [Route("GetEmployeeById/{id}")]
-        public async Task<IActionResult> GetEmployeeById(string id)
+        [Route("GetVehicleById/{id}")]
+        public async Task<IActionResult> GetVehicleById(string id)
         {
             try
             {
                 if (string.IsNullOrWhiteSpace(id)) { return BadRequest("Id can't be null"); }
-                var result = await _employeeService.Get(id);
+                var result = await _vehicleService.Get(id);
                 if (result.IsSuccess == true)
                 {
                     return Ok(result);
@@ -59,13 +59,12 @@ namespace PTS_API.Controllers
         }
 
         [HttpGet]
-        [Route("GetEmployeeByEmail/{mail}")]
-        public async Task<IActionResult> GetEmployeeByEmail(string mail)
+        [Route("GetAllVehicles")]
+        public async Task<IActionResult> GetAllVehicles(CancellationToken cancellationToken)
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(mail)) { return BadRequest("Mail can't be null"); }
-                var result = await _employeeService.GetByEmail(mail);
+                var result = await _vehicleService.GetAllVehicles(cancellationToken);
                 if (result.IsSuccess == true)
                 {
                     return Ok(result);
@@ -76,16 +75,15 @@ namespace PTS_API.Controllers
             {
                 return BadRequest(ex.Message);
             }
-
         }
 
         [HttpGet]
-        [Route("GetAllEmployees")]
-        public async Task<IActionResult> GetAllEmployees(CancellationToken cancellationToken)
+        [Route("GetAllTerminalVehicles/{terminalId}")]
+        public async Task<IActionResult> GetAllTerminalVehicles(string terminalId,CancellationToken cancellationToken)
         {
             try
             {
-                var result = await _employeeService.GetAllEmployees(cancellationToken);
+                var result = await _vehicleService.GetTerminalVehicle(terminalId,cancellationToken);
                 if (result.IsSuccess == true)
                 {
                     return Ok(result);
@@ -97,31 +95,14 @@ namespace PTS_API.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
         [HttpGet]
-        [Route("SearchEmployee/{keyword}")]
-        public async Task<IActionResult> SearchEmployee(string keyword, CancellationToken cancellationToken)
+        [Route("DeactivatedVehicles")]
+        public async Task<IActionResult> DeactivatedVehicles(CancellationToken cancellationToken = default)
         {
             try
             {
-                var result = await _employeeService.SearchEmployee(keyword,cancellationToken);
-                if (result.IsSuccess == true)
-                {
-                    return Ok(result);
-                }
-                return BadRequest(new { Message = "internal error, please try again later..." });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-        [HttpGet]
-        [Route("DeactivatedEmployees")]
-        public async Task<IActionResult> DeactivatedEmployees(CancellationToken cancellationToken = default)
-        {
-            try
-            {
-                var result = await _employeeService.GetInactiveEmployees(cancellationToken);
+                var result = await _vehicleService.GetInactiveVehicle(cancellationToken);
                 if (result.IsSuccess == true)
                 {
                     return Ok(result);
@@ -135,14 +116,14 @@ namespace PTS_API.Controllers
         }
 
         [HttpDelete]
-        [Route("DeactivateEmployee/{employeeId}")]
-        public async Task<IActionResult> DeleteEmployee(string employeeId)
+        [Route("DeleteVehicle/{vehicleId}")]
+        public async Task<IActionResult> DeleteVehicle(string vehicleId)
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(employeeId)) { return BadRequest("Employee identity can't be null"); }
-                 await _employeeService.Delete(employeeId);
-                    return Ok(new { Message = "Employee Deleted successfully" });
+                if (string.IsNullOrWhiteSpace(vehicleId)) { return BadRequest("Vehicle identity can't be null"); }
+                await _vehicleService.Delete(vehicleId);
+                return Ok(new { Message = "Vehicle Deleted successfully" });
             }
             catch (Exception ex)
             {
@@ -152,18 +133,18 @@ namespace PTS_API.Controllers
         }
 
         [HttpPatch]
-        [Route("UpdateEmployee")]
-        public async Task<IActionResult> UpdateEmployee(UpdateEmployeeRequestModel model)
+        [Route("UpdateVehicle")]
+        public async Task<IActionResult> UpdateVehicle(UpdateVehicleRequestModel model)
         {
             try
             {
                 if (!ModelState.IsValid) { return BadRequest("Your credentials are not valid, please check your inputs"); }
-                var result = await _employeeService.UpdateEmployeeAccount(model);
+                var result = await _vehicleService.UpdateVehicle(model);
                 if (result == true)
                 {
-                    return Ok(new { Message = "employee updated successfully" });
+                    return Ok(new { Message = "vehicle updated successfully" });
                 }
-                return BadRequest(new { Message = "internal error when updating user" });
+                return BadRequest(new { Message = "internal error when updating vehicle" });
             }
             catch (Exception ex)
             {
@@ -172,16 +153,16 @@ namespace PTS_API.Controllers
         }
 
         [HttpPatch]
-        [Route("ActivateEmployee/{employeeId}")]
-        public async Task<IActionResult> ActivateEmployee(string employeeId)
+        [Route("ActivateVehicle")]
+        public async Task<IActionResult> ActivateVehicle(string vehicleId)
         {
             try
             {
-                if (employeeId == null) { return BadRequest("Your credentials are not valid, please check your inputs"); }
-                var result = await _employeeService.ActivateEmployee(employeeId);
+                if (vehicleId == null) { return BadRequest("Your credentials are not valid, please check your inputs"); }
+                var result = await _vehicleService.ActivateVehicle(vehicleId);
                 if (result == true)
                 {
-                    return Ok(new { Message = "employee activated successfully" });
+                    return Ok(new { Message = "vehicle activated successfully" });
                 }
                 return BadRequest(new { Message = "internal error when updating user" });
             }
