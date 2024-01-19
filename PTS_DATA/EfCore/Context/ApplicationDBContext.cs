@@ -32,6 +32,11 @@ namespace PTS_DATA.EfCore.Context
         public DbSet<StoreItemRequest> StoreItemRequests { get; set; }
         public DbSet<Terminal> Terminals { get; set; }
         public DbSet<Vehicle> vehicles { get; set; }
+        public DbSet<Leave> Leaves { get; set; }
+        public DbSet<Complain> Complains { get; set; }
+        public DbSet<Sales> Sales { get; set; }
+        public DbSet<Expenditure> Expenditures { get; set; }
+        public DbSet<StaffAssets> StaffAssets { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

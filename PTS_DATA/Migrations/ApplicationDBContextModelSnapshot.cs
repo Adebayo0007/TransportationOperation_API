@@ -371,6 +371,9 @@ namespace PTS_DATA.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("VehicleType")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.ToTable("BusBrandings");
@@ -381,14 +384,26 @@ namespace PTS_DATA.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<double>("Amount")
+                        .HasColumnType("float");
+
                     b.Property<string>("AuditorComment")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("BusBrandingId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int?>("AvailabilityType")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("BrandEndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("BrandStartDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("DDPComment")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
 
                     b.Property<bool?>("IsAuditorCommented")
                         .HasColumnType("bit");
@@ -408,14 +423,73 @@ namespace PTS_DATA.Migrations
                     b.Property<bool?>("IsVerified")
                         .HasColumnType("bit");
 
+                    b.Property<long>("NumberOfVehicle")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("OperationType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Reciept")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("RequestType")
+                        .HasColumnType("int");
+
+                    b.Property<int>("VehicleType")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BusBrandingId");
-
                     b.ToTable("BusBrandingRequests");
+                });
+
+            modelBuilder.Entity("PTS_CORE.Domain.Entities.Complain", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CreatorId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CreatorName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DeletedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("IsModified")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ModifierId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ModifierName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Subject")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Complains");
                 });
 
             modelBuilder.Entity("PTS_CORE.Domain.Entities.Employee", b =>
@@ -472,6 +546,52 @@ namespace PTS_DATA.Migrations
                     b.ToTable("Employees");
                 });
 
+            modelBuilder.Entity("PTS_CORE.Domain.Entities.Expenditure", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("CreatorId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CreatorName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DeletedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("IsModified")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ModifierId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ModifierName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Expenditures");
+                });
+
             modelBuilder.Entity("PTS_CORE.Domain.Entities.HireVehicle", b =>
                 {
                     b.Property<string>("Id")
@@ -482,6 +602,9 @@ namespace PTS_DATA.Migrations
 
                     b.Property<DateTime>("ArrivalDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<double>("CostOfExacution")
+                        .HasColumnType("float");
 
                     b.Property<string>("CreatorId")
                         .HasColumnType("nvarchar(max)");
@@ -517,6 +640,9 @@ namespace PTS_DATA.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<double>("Fuel")
+                        .HasColumnType("float");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
@@ -526,10 +652,20 @@ namespace PTS_DATA.Migrations
                     b.Property<DateTime?>("LastModified")
                         .HasColumnType("datetime2");
 
+                    b.Property<double>("Maintenance")
+                        .HasColumnType("float");
+
                     b.Property<string>("ModifierId")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ModifierName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("Profit")
+                        .HasColumnType("float");
+
+                    b.Property<string>("RecieptImage")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("VehicleId")
@@ -546,20 +682,45 @@ namespace PTS_DATA.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<double>("Amount")
+                        .HasColumnType("float");
+
+                    b.Property<DateTime>("ArrivalDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("AuditorComment")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<double>("Cost")
+                    b.Property<int?>("AvailabilityType")
+                        .HasColumnType("int");
+
+                    b.Property<double>("CostOfExacution")
                         .HasColumnType("float");
 
                     b.Property<string>("DDPComment")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime>("DeapartureDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DepartureAddress")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DepartureTerminalId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DestinationAddress")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DriverUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<double>("Fuel")
                         .HasColumnType("float");
-
-                    b.Property<string>("HireVehicleId")
-                        .HasColumnType("nvarchar(450)");
 
                     b.Property<bool?>("IsAuditorCommented")
                         .HasColumnType("bit");
@@ -592,11 +753,82 @@ namespace PTS_DATA.Migrations
                     b.Property<int>("RequestType")
                         .HasColumnType("int");
 
+                    b.Property<string>("VehicleId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("HireVehicleId");
-
                     b.ToTable("HireVehicleRequests");
+                });
+
+            modelBuilder.Entity("PTS_CORE.Domain.Entities.Leave", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("CreatorId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CreatorName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DeletedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("Enddate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDenied")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsGranted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("IsModified")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsOpened")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("LeaveType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ModifierId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ModifierName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ReasonForDenial")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ReasonForLeave")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("Startdate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Subject")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Leaves");
                 });
 
             modelBuilder.Entity("PTS_CORE.Domain.Entities.Notification", b =>
@@ -668,12 +900,26 @@ namespace PTS_DATA.Migrations
                     b.Property<string>("AuditorComment")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("AvailabilityType")
+                        .HasColumnType("int");
+
                     b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CreatorId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CreatorName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("DDPComment")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
 
                     b.Property<bool?>("IsAuditorCommented")
                         .HasColumnType("bit");
@@ -685,6 +931,9 @@ namespace PTS_DATA.Migrations
                         .HasColumnType("bit");
 
                     b.Property<bool?>("IsDDPCommented")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
                     b.Property<bool?>("IsResolved")
@@ -703,6 +952,113 @@ namespace PTS_DATA.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("OtherRequests");
+                });
+
+            modelBuilder.Entity("PTS_CORE.Domain.Entities.Sales", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("CreatorId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CreatorName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DeletedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("IsModified")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsPaid")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ModifierId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ModifierName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Quantity")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("TotalAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Sales");
+                });
+
+            modelBuilder.Entity("PTS_CORE.Domain.Entities.StaffAssets", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("CreatorId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CreatorName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DeletedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("IsModified")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ModifierId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ModifierName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Owner")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<string>("StoreItemName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("StaffAssets");
                 });
 
             modelBuilder.Entity("PTS_CORE.Domain.Entities.StoreAsset", b =>
@@ -743,10 +1099,6 @@ namespace PTS_DATA.Migrations
                     b.Property<string>("ModifierName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Signature")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("StoreItemDescription")
                         .HasColumnType("nvarchar(max)");
 
@@ -781,6 +1133,9 @@ namespace PTS_DATA.Migrations
 
                     b.Property<string>("AuditorComment")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("AvailabilityType")
+                        .HasColumnType("int");
 
                     b.Property<string>("DDPComment")
                         .HasColumnType("nvarchar(max)");
@@ -872,7 +1227,29 @@ namespace PTS_DATA.Migrations
                     b.Property<string>("AuditorComment")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("AvailabilityType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CreatorId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CreatorName")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("DDPComment")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DeletedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool?>("IsAuditorCommented")
@@ -887,14 +1264,26 @@ namespace PTS_DATA.Migrations
                     b.Property<bool?>("IsDDPCommented")
                         .HasColumnType("bit");
 
-                    b.Property<bool?>("IsResolved")
+                    b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<bool?>("IsTechnical")
+                    b.Property<bool?>("IsModified")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("IsResolved")
                         .HasColumnType("bit");
 
                     b.Property<bool?>("IsVerified")
                         .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ModifierId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ModifierName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<long>("Quantity")
                         .HasColumnType("bigint");
@@ -906,10 +1295,6 @@ namespace PTS_DATA.Migrations
                     b.Property<int>("RequestType")
                         .HasColumnType("int");
 
-                    b.Property<string>("StoreAssetSignature")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("StoreItemId")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -918,16 +1303,14 @@ namespace PTS_DATA.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("TerminalId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("StoreItemType")
+                        .HasColumnType("int");
 
                     b.Property<string>("TerminalName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("VehicleId")
-                        .IsRequired()
+                    b.Property<string>("VehicleRegistrationNumber")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -1156,15 +1539,6 @@ namespace PTS_DATA.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("PTS_CORE.Domain.Entities.BusBrandingRequest", b =>
-                {
-                    b.HasOne("PTS_CORE.Domain.Entities.BusBranding", "BusBranding")
-                        .WithMany()
-                        .HasForeignKey("BusBrandingId");
-
-                    b.Navigation("BusBranding");
-                });
-
             modelBuilder.Entity("PTS_CORE.Domain.Entities.Employee", b =>
                 {
                     b.HasOne("PTS_CORE.Domain.Entities.ApplicationUser", "ApplicationUser")
@@ -1172,15 +1546,6 @@ namespace PTS_DATA.Migrations
                         .HasForeignKey("ApplicationUserId");
 
                     b.Navigation("ApplicationUser");
-                });
-
-            modelBuilder.Entity("PTS_CORE.Domain.Entities.HireVehicleRequest", b =>
-                {
-                    b.HasOne("PTS_CORE.Domain.Entities.HireVehicle", "HireVehicle")
-                        .WithMany()
-                        .HasForeignKey("HireVehicleId");
-
-                    b.Navigation("HireVehicle");
                 });
 
             modelBuilder.Entity("PTS_CORE.Domain.Entities.StoreAssetRequest", b =>

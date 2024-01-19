@@ -17,6 +17,7 @@ namespace PTS_CORE.Domain.DataTransferObject.RequestModel.Vehicle
         public string? TerminalId { get; set; }
         public OperationType? OperationType { get; set; }
         public VehicleStatus? VehicleStatus { get; set; }
+        public VehicleType? VehicleType { get; set; }
         public string? RegistrationNumber { get; set; }
         public string? EngineNumber { get; set; }
         public string? IMEINumber { get; set; }

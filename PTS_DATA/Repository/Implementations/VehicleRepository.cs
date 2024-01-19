@@ -30,6 +30,7 @@ namespace PTS_DATA.Repository.Implementations
         {
             return await _db.vehicles
               .Where(x => x.IsDeleted == false)
+              .OrderByDescending(x => x.DateCreated)
               .ToListAsync(cancellationToken);
         }
 
@@ -51,6 +52,21 @@ namespace PTS_DATA.Repository.Implementations
         {
             var result = await _db.vehicles
               .Where(x => x.TerminalId == terminalId)
+              .OrderByDescending(x => x.DateCreated)
+              .ToListAsync(cancellationToken);
+            return result ?? null;
+        }
+
+        public async Task<IEnumerable<Vehicle>> SearchVehicle(string keyword, CancellationToken cancellationToken = default)
+        {
+            var result = await _db.vehicles
+              .Where(x => x.Name.ToLower().Contains(keyword.ToLower()) ||
+              x.RegistrationNumber.ToLower().Contains(keyword.ToLower()) ||
+              x.Name.ToLower() == keyword.ToLower()||
+               x.RegistrationNumber.ToLower() == keyword.ToLower() ||
+                x.TerminalId.ToLower() == keyword.ToLower() ||
+              x.TerminalId.ToLower().Contains(keyword.ToLower()))
+              .OrderByDescending(x => x.DateCreated)
               .ToListAsync(cancellationToken);
             return result ?? null;
         }
@@ -59,6 +75,7 @@ namespace PTS_DATA.Repository.Implementations
         {
             return await _db.vehicles
               .Where(x => x.IsDeleted == true)
+              .OrderByDescending(x => x.DeletedDate)
               .ToListAsync(cancellationToken);
         }
 

@@ -35,6 +35,7 @@ namespace PTS_DATA.Repository.Implementations
         {
             return await _db.Terminals
               .Where(x => x.IsDeleted == false)
+              .OrderByDescending(x => x.DateCreated)
               .ToListAsync(cancellationToken);
         }
 
@@ -52,17 +53,25 @@ namespace PTS_DATA.Repository.Implementations
                .SingleOrDefaultAsync(x => x.Id.ToLower() == id.ToLower());
         }
 
+        public async Task<Terminal> GetModelByNameAsync(string name)
+        {
+            return await _db.Terminals
+               .SingleOrDefaultAsync(x => x.Name.ToLower() == name.ToLower());
+        }
+
         public async Task<IEnumerable<Terminal>> InactiveTerminal(CancellationToken cancellationToken = default)
         {
             return await _db.Terminals
              .Where(x => x.IsDeleted == true)
+             .OrderByDescending(x => x.DeletedDate)
              .ToListAsync(cancellationToken);
         }
 
         public async Task<IEnumerable<Terminal>> SearchTerminal(string? keyword = null, CancellationToken cancellationToken = default)
         {
             return await _db.Terminals
-             .Where(x => x.Name.Contains(keyword.Trim()) || x.Code.Contains(keyword.Trim()) || x.State.Contains(keyword.Trim()) || x.State.ToLower() == keyword.Trim().ToLower())
+             .Where(x => x.Name.ToLower().Contains(keyword.Trim().ToLower()) || x.Code.Contains(keyword.Trim()) || x.State.Contains(keyword.Trim()) || x.State.ToLower() == keyword.Trim().ToLower())
+             .OrderByDescending(x => x.DateCreated)
              .ToListAsync(cancellationToken); 
         }
 

@@ -8,11 +8,16 @@ namespace PTS_CORE.Domain.Entities
 {
     public class HireVehicle : BaseEntity
     {
-        public string Id { get; set; } = Guid.NewGuid().ToString().Substring(0, 7);
+        public string Id { get; set; } = Guid.NewGuid().ToString();
         public string DepartureAddress { get; set; }
         public string DestinationAddress { get; set; }
         public double Amount { get; set; }
         public string VehicleId { get; set; }
+        public double Profit { get; set; }
+        public double CostOfExacution { get; set; }
+        public double Maintenance { get; set; }
+        public double Fuel { get; set; }
+        public string RecieptImage { get; set; }
         public string DriverUserId { get; set; }
         public DateTime DeapartureDate { get; set; }
         public DateTime ArrivalDate { get; set; }

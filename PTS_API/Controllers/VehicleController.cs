@@ -153,7 +153,7 @@ namespace PTS_API.Controllers
         }
 
         [HttpPatch]
-        [Route("ActivateVehicle")]
+        [Route("ActivateVehicle/{vehicleId}")]
         public async Task<IActionResult> ActivateVehicle(string vehicleId)
         {
             try
@@ -165,6 +165,25 @@ namespace PTS_API.Controllers
                     return Ok(new { Message = "vehicle activated successfully" });
                 }
                 return BadRequest(new { Message = "internal error when updating user" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("SearchVehicle/{keyword}")]
+        public async Task<IActionResult> SearchVehicle(string? keyword, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var result = await _vehicleService.SearchVehicle(keyword, cancellationToken);
+                if (result.IsSuccess == true)
+                {
+                    return Ok(result);
+                }
+                return BadRequest(new { Message = "internal error, please try again later..." });
             }
             catch (Exception ex)
             {

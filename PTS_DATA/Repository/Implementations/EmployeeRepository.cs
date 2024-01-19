@@ -36,6 +36,7 @@ namespace PTS_DATA.Repository.Implementations
             return await _db.Employees
                 .Include(x => x.ApplicationUser)
                 .Where(x => x.IsDeleted == false && x.ApplicationUser.IsDeleted == false)
+                .OrderByDescending(x => x.DateCreated)
                 .ToListAsync(cancellationToken);
         }
 
@@ -69,6 +70,7 @@ namespace PTS_DATA.Repository.Implementations
             return await _db.Employees
                .Include(x => x.ApplicationUser)
                .Where(x => x.IsDeleted == true && x.ApplicationUser.IsDeleted == true)
+               .OrderByDescending(x => x.DeletedDate)
                .ToListAsync(cancellationToken);
         }
 
@@ -79,6 +81,7 @@ namespace PTS_DATA.Repository.Implementations
               .Where(x => x.StaffIdentityCardNumber.ToLower() == keyword.ToLower() || 
                      x.ApplicationUser.Email.ToLower() == keyword.ToLower() || 
                      x.ApplicationUser.PhoneNumber.ToLower() == keyword.ToLower())
+              .OrderByDescending(x => x.DateCreated)
               .ToListAsync(cancellationToken);
         }
 

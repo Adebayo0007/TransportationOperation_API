@@ -271,30 +271,30 @@ namespace PTS_BUSINESS.Services.Implementations
         }
 
 
-        /// <summary>
-        /// /////////////
-        /// </summary>
-        /// <param name="model"></param>
-        /// <returns></returns>
-        /// 
-        private StoreItemResponseModel ReturnStoreItemResponseModel(StoreItem model)
-        {
-            return new StoreItemResponseModel
-            {
-                Id = model.Id,
-                Name = model.Name,
-                Description = model.Description,
-                IsDeleted = model.IsDeleted,
-                DeletedDate = model.DeletedDate,
-                DeletedBy = model.DeletedBy,
-                CreatorName = model.CreatorName,
-                CreatorId = model.CreatorId,
-                DateCreated = model.DateCreated,
-                IsModified = model.IsModified,
-                ModifierName = model.ModifierName,
-                ModifierId = model.ModifierId,
-                LastModified = model.LastModified
-            };
-        }
+                /// <summary>
+                /// /////////////
+                /// </summary>
+                /// <param name="model"></param>
+                /// <returns></returns>
+                /// 
+                private StoreItemResponseModel ReturnStoreItemResponseModel(StoreItem model)
+                {
+                    return new StoreItemResponseModel
+                    {
+                        Id = model.Id,
+                        Name = model.Name,
+                        Description = model.Description,
+                        IsDeleted = model.IsDeleted,
+                        DeletedDate = model.DeletedDate,
+                        DeletedBy = model.DeletedBy,
+                        CreatorName = model.CreatorName,
+                        CreatorId = model.CreatorId,
+                        DateCreated = model.DateCreated,
+                        IsModified = model.IsModified,
+                        ModifierName = model.ModifierName,
+                        ModifierId = model.ModifierId,
+                        LastModified = model.LastModified
+                    };
+                }
     }
 }

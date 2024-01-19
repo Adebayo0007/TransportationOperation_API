@@ -8,7 +8,7 @@ namespace PTS_CORE.Domain.Entities
 {
     public class StoreAssetRequest : RequestSetting
     {
-        public string Id { get; set; } = Guid.NewGuid().ToString().Substring(0, 7);
+        public string Id { get; set; } = Guid.NewGuid().ToString();
         public StoreAsset StoreAsset { get; set; }
     }
 }

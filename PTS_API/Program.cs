@@ -1,9 +1,15 @@
+using Hangfire;
+using Hangfire.SqlServer;
+using MailKit.Security;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using MimeKit;
 using PTS_API.Authentication;
+using PTS_API.GateWay.Email;
 using PTS_API.Utils;
 using PTS_BUSINESS.Services.Implementations;
 using PTS_BUSINESS.Services.Interfaces;
@@ -11,6 +17,8 @@ using PTS_CORE.Domain.Entities;
 using PTS_DATA.EfCore.Context;
 using PTS_DATA.Repository.Implementations;
 using PTS_DATA.Repository.Interfaces;
+using sib_api_v3_sdk.Client;
+using System.Net.Mail;
 using System.Text;
 
 namespace PTS_API
@@ -39,7 +47,29 @@ namespace PTS_API
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-            
+
+            builder.Services.AddHangfire(configuration => configuration
+                .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
+                .UseSimpleAssemblyNameTypeSerializer()
+                .UseRecommendedSerializerSettings()
+                .UseSqlServerStorage(builder.Configuration.GetConnectionString("Database"), new SqlServerStorageOptions
+                {
+                    CommandBatchMaxTimeout = TimeSpan.FromMinutes(5),
+                    SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),
+                    QueuePollInterval = TimeSpan.Zero,
+                    UseRecommendedIsolationLevel = true,
+                    DisableGlobalLocks = true
+                }));
+
+            //services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
+            // {
+            //     builder.AllowAnyOrigin()
+            //     .AllowAnyMethod()
+            //     .AllowAnyMethod();
+            // }));
+
+            builder.Services.AddHangfireServer();
+
             builder.Services.AddDbContext<ApplicationDBContext>(options =>
                options.UseSqlServer(builder.Configuration.GetConnectionString("Database")));
 
@@ -50,7 +80,7 @@ namespace PTS_API
             {
                 //password requirement
                 options.Password.RequiredLength = 8;
-                options.Password.RequireNonAlphanumeric = true;
+               // options.Password.RequireNonAlphanumeric = true;
                 options.Password.RequireUppercase = true;
                 options.Password.RequireLowercase = true;
                 options.Password.RequireDigit = true;
@@ -115,7 +145,64 @@ namespace PTS_API
             builder.Services.AddScoped<IStoreItemRepository, StoreItemRepository>();
             builder.Services.AddScoped<IStoreItemService, StoreItemService>();
 
+            builder.Services.AddScoped<ILeaveRepository, LeaveRepository>();
+            builder.Services.AddScoped<ILeaveService, LeaveService>();
+
+            builder.Services.AddScoped<IComplainRepository, ComplainRepository>();
+            builder.Services.AddScoped<IComplainService, ComplainService>();
+
+            builder.Services.AddScoped<IOtherRequestRepository, OtherRequestRepository>();
+            builder.Services.AddScoped<IOtherRequestService, OtherRequestService>();
+
+            builder.Services.AddScoped<IStoreItemRequestRepository, StoreItemRequestRepository>();
+            builder.Services.AddScoped<IStoreItemRequestService, StoreItemRequestService>();
+
+            builder.Services.AddScoped<IStoreAssetRepository, StoreAssetRepository>();
+            builder.Services.AddScoped<IStoreAssetService, StoreAssetService>();
+
+            builder.Services.AddScoped<IStaffAssetRepository, StaffAssetRepository>();
+            builder.Services.AddScoped<IStaffAssetService, StaffAssetService>();
+
+            builder.Services.AddScoped<IEmailSender, EmailSender>();
+
+            builder.Services.AddScoped<IExpenditureRepository, ExpenditureRepository>();
+            builder.Services.AddScoped<ISaleRepository, SaleRepository>();
+
+
             //builder.Services.AddScoped<ITokenInvalidationService, TokenInvalidationService>();
+            
+          
+
+            builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+
+            // Configure MailKit manually
+            builder.Services.AddScoped(provider =>
+            {
+                var emailSettings = provider.GetRequiredService<IOptions<EmailSettings>>().Value;
+
+                return new SmtpClient
+                {
+                   /* ServerCertificateValidationCallback = (s, c, h, e) => true,
+                    ConnectTimeout = 15000, // in milliseconds*/
+                    Port = emailSettings.SmtpPort,
+                    DeliveryFormat = SmtpDeliveryFormat.International,
+                    DeliveryMethod = SmtpDeliveryMethod.Network,
+                   /* SecureSocketOptions = SecureSocketOptions.Auto,
+                    CheckCertificateRevocation = false*/
+                };
+            });
+
+            builder.Services.AddScoped(provider =>
+            {
+                var emailSettings = provider.GetRequiredService<IOptions<EmailSettings>>().Value;
+                var smtpClient = provider.GetRequiredService<SmtpClient>();
+
+                return new MimeMessage
+                {
+                    Sender = new MailboxAddress(emailSettings.SenderName, emailSettings.SenderEmail),
+                    Body = new TextPart("plain") { Text = "Test message" }
+                };
+            });
 
             builder.Services.AddScoped<IJWTAuthentication, JWTAuthentication>();
             builder.Services.AddRouting(option => option.LowercaseUrls = true);
@@ -181,6 +268,8 @@ namespace PTS_API
                 app.UseSwaggerUI();
             }
 
+            app.UseHangfireDashboard();
+            app.UseHangfireServer();
             app.UseRouting();
             app.UseHttpsRedirection();
             app.UseCors("CorsPolicy");

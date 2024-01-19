@@ -8,7 +8,7 @@ namespace PTS_CORE.Domain.Entities
 {
     public class Terminal : BaseEntity
     {
-        public string Id { get; set; } = Guid.NewGuid().ToString().Substring(0, 7);
+        public string Id { get; set; } = Guid.NewGuid().ToString();
         public string Name { get; set; }
         public string? Code { get; set; }
         public string Address { get; set; }

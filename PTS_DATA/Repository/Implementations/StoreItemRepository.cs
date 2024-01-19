@@ -35,6 +35,7 @@ namespace PTS_DATA.Repository.Implementations
         {
             return await _db.StoreItems
              .Where(x => x.IsDeleted == false)
+             .OrderByDescending(x => x.DateCreated)
              .ToListAsync(cancellationToken);
         }
 
@@ -56,6 +57,7 @@ namespace PTS_DATA.Repository.Implementations
         {
             return await _db.StoreItems
              .Where(x => x.IsDeleted == true)
+             .OrderByDescending(x => x.DeletedDate)
              .ToListAsync(cancellationToken);
         }
 
@@ -63,6 +65,7 @@ namespace PTS_DATA.Repository.Implementations
         {
             return await _db.StoreItems
              .Where(x => x.Name.Contains(keyword.Trim()) || x.Name.ToLower() == keyword.Trim().ToLower())
+             .OrderByDescending(x => x.DateCreated)
              .ToListAsync(cancellationToken);
         }
 

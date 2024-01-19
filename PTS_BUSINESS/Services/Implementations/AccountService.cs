@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using PTS_BUSINESS.Services.Interfaces;
 using PTS_CORE.Domain.DataTransferObject;
+using PTS_CORE.Domain.DataTransferObject.Email;
 using PTS_CORE.Domain.DataTransferObject.RequestModel.Account;
 using PTS_CORE.Domain.Entities;
 using PTS_CORE.Utils;
@@ -422,8 +423,32 @@ namespace PTS_BUSINESS.Services.Implementations
                 throw;
             }
         }
+       /* public async Task<BaseResponse<IEnumerable<ApplicationUserDto>>> GetAllDrivers()
+        {
 
-        public async Task<bool> SendOTPForPasswordReset(string email)
+            try
+            {
+                var user = await _userManager.Users.Where(x => x.RoleName == "Driver").OrderByDescending(x => x.DateCreated).ToListAsync();
+                if (user != null)
+                    return new BaseResponse<IEnumerable<ApplicationUserDto>>
+                    {
+                        IsSuccess = true,
+                        Message = $"drivers retrieved successfully",
+                        Data = user.Select(x => ReturnApplicationUserDto(x)).ToList()
+                    };
+                else return new BaseResponse<IEnumerable<ApplicationUserDto>>
+                {
+                    IsSuccess = false,
+                    Message = $"drivers failed to retrieved successfully",
+                };
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }*/
+
+        public async Task<ApplicationUserDto> SendOTPForPasswordReset(string email)
         {
             try
             {
@@ -434,12 +459,11 @@ namespace PTS_BUSINESS.Services.Implementations
                     {
                         user.PasswordOTP = CommonHelper.RandomDigits(5);
                         var result = await _userManager.UpdateAsync(user);
-                        //sending the opt as mail to the user is the next step
-                        return true;
+                        return ReturnApplicationUserDto(user);
                     }
-                    else return false;
+                    else return null;
                 }
-                else return false;
+                else return null;
             }
             catch (Exception ex) { throw; }
         }
@@ -494,6 +518,30 @@ namespace PTS_BUSINESS.Services.Implementations
 
         }
 
+        public async Task<BaseResponse<IEnumerable<ApplicationUserDto>>> Drivers()
+        {
+
+            try
+            {
+                var user = await _userManager.Users.Where(x => x.RoleName == "Driver").OrderByDescending(x => x.DateCreated).ToListAsync();
+                if (user != null)
+                    return new BaseResponse<IEnumerable<ApplicationUserDto>>
+                    {
+                        IsSuccess = true,
+                        Message = $"drivers retrieved successfully",
+                        Data = user.Select(x => ReturnApplicationUserDto(x)).ToList()
+                    };
+                else return new BaseResponse<IEnumerable<ApplicationUserDto>>
+                {
+                    IsSuccess = false,
+                    Message = $"drivers failed to retrieved successfully",
+                };
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
 
         public async Task<bool> UpdateRefreshToken(string id, string refreshToken)
         {
@@ -557,12 +605,12 @@ namespace PTS_BUSINESS.Services.Implementations
                 LastModified = model.LastModified,
                 DateOfBirth = model.DateOfBirth,
                 Gender = model.Gender,
-                TerminalId = model.TerminalId
-
-
+                TerminalId = model.TerminalId,
+                PasswordOTP = model.PasswordOTP
+                
             };
         }
 
-
+       
     }
 }

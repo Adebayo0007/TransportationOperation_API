@@ -145,7 +145,7 @@ namespace PTS_API.Controllers
                 {
                     return Ok(new { Message = "terminal activated successfully" });
                 }
-                return BadRequest(new { Message = "internal error when updating terminal" });
+                return BadRequest(new { Message = "internal error when activating terminal" });
             }
             catch (Exception ex)
             {

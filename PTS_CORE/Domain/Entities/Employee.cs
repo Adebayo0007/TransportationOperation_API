@@ -8,7 +8,7 @@ namespace PTS_CORE.Domain.Entities
 {
     public class Employee : BaseEntity
     {
-        public string Id { get; set; } = Guid.NewGuid().ToString().Substring(0, 7);
+        public string Id { get; set; } = Guid.NewGuid().ToString();
         public string? ApplicatioUserId { get; set; }
         public ApplicationUser ApplicationUser { get; set; }
         public string? TerminalId { get; set; }

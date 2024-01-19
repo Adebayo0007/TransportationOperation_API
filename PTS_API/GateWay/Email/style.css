@@ -1,0 +1,184 @@
+﻿table {
+    border-collapse: collapse;
+    mso-table-lspace: 0pt;
+    mso-table-rspace: 0pt;
+}
+
+    table td {
+        border-collapse: collapse;
+    }
+
+body {
+    -ms-text-size-adjust: 100%;
+    margin: 0;
+    padding: 0;
+    color: #e0e6e6;
+    font-family: 'FullerSansDT Regular', Helvetica;
+    font-size: 14px;
+    mso-margin-top-alt: 0px;
+    mso-margin-bottom-alt: 0px;
+    mso-padding-alt: 0px 0px 0px 0px;
+}
+
+.ExternalClass {
+    width: 100%;
+}
+
+    .ExternalClass, .ExternalClass p, .ExternalClass span, .ExternalClass font, .ExternalClass td, .ExternalClass div {
+        line-height: 100%;
+    }
+
+img {
+    outline: none;
+    text-decoration: none;
+    -ms-interpolation-mode: bicubic;
+}
+
+a img {
+    border: none;
+}
+
+html {
+    -webkit-text-size-adjust: none !important;
+}
+
+table {
+    border-collapse: collapse;
+    mso-table-lspace: 0pt;
+    mso-table-rspace: 0pt;
+}
+
+.appleLink-cecece a {
+    color: #cecece !important;
+    text-decoration: none;
+}
+
+@media screen {
+    @font-face {
+        font-family: 'FullerSansDT Regular';
+        src: url('  ');
+    }
+
+    @font-face {
+        font-family: 'FullerSansDT Bold';
+        src: url('https://d2gpw04v015qcw.cloudfront.net/fonts/fuller_sans_dt/bold/2DC1D5_0_0-3c66aef6.woff');
+    }
+
+    @font-face {
+        font-family: 'FullerSansDT ExtraLight';
+        src: url('http://marketing-assets.nest.com/email-assets/fonts/FullerSansDT_ExtraLight.woff');
+    }
+
+    @font-face {
+        font-family: 'AkkuratPro Regular';
+        src: url('https://nest.com/fonts/lineto_akkurat_pro/regular.woff?email');
+    }
+
+    @font-face {
+        font-family: AkkuratProLight;
+        src: url('https://nest.com/fonts/lineto_akkurat_pro/light.woff?email');
+    }
+
+    @font-face {
+        font-family: 'AkkuratPro Bold';
+        src: url('https://nest.com/fonts/lineto_akkurat_pro/bold.woff?email');
+    }
+}
+
+@media only screen and (min-width: 738px) {
+    .font-weight-normal {
+        font-weight: normal !important;
+    }
+}
+
+@media only screen and (max-device-width: 737px) {
+    .font-weight-normal {
+        font-weight: normal !important;
+    }
+
+    .mobile-full-width {
+        width: 100% !important;
+    }
+
+    .hero {
+        width: 100% !important;
+        height: auto !important;
+        display: block !important;
+    }
+
+    .side-padding {
+        padding-left: 25px !important;
+        padding-right: 25px !important;
+        padding-bottom: 20px !important;
+    }
+
+    .mobile-display {
+        display: block !important;
+        width: 100% !important;
+        height: auto !important;
+        overflow: visible !important
+    }
+
+    .mobile-hide {
+        display: none !important;
+    }
+
+    .logo-cell {
+        padding-right: 5px !important;
+    }
+
+    .paragraph {
+        font-size: 15px !important;
+        line-height: 19px !important;
+    }
+
+    .padding-top-0 {
+        padding-top: 0px !important;
+    }
+
+    .padding-right-0 {
+        padding-right: 0px !important;
+    }
+
+    .padding-bottom-0 {
+        padding-bottom: 0px !important;
+    }
+
+    .padding-left-0 {
+        padding-left: 0px !important;
+    }
+
+    .mobile-button {
+        padding: 8px 20px !important;
+        font-size: 14px !important;
+    }
+
+    .mobile-button-a {
+        font-size: 14px !important;
+    }
+}
+
+/* TARGET IPHONE 5 OR LESS */
+@media only screen and (min-device-width: 219px) and (max-device-width: 374px) {
+}
+
+/* TARGET IPHONE 6 */
+@media only screen and (min-device-width: 375px) and (max-device-width: 413px) {
+}
+
+/* TARGET IPHONE 6+ */
+@media only screen and (min-device-width: 414px) and (max-device-width: 735px) {
+}
+
+/* TARGET OUTLOOK.COM */
+.ExternalClass .outlook-button {
+    padding: 7px 30px 9px !important;
+}
+
+.ExternalClass .font-weight-normal {
+    font-weight: bold !important;
+}
+
+.ExternalClass .font-weight-normal {
+    font-weight: bold !important;
+}

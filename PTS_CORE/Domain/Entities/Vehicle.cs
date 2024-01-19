@@ -4,7 +4,7 @@ namespace PTS_CORE.Domain.Entities
 {
     public class Vehicle : BaseEntity
     {
-        public string Id { get; set; } = Guid.NewGuid().ToString().Substring(0, 7);
+        public string Id { get; set; } = Guid.NewGuid().ToString();
         public string Name { get; set; }  
         public string? DriverId { get; set; }
         public string? TerminalId { get; set; }

@@ -16,6 +16,7 @@ namespace PTS_BUSINESS.Services.Interfaces
         Task<BaseResponse<IEnumerable<VehicleResponseModel>>> GetAllVehicles(CancellationToken cancellationToken = default);
         Task<BaseResponse<IEnumerable<VehicleResponseModel>>> GetInactiveVehicle(CancellationToken cancellationToken = default);
         Task<BaseResponse<IEnumerable<VehicleResponseModel>>> GetTerminalVehicle(string terminalId,CancellationToken cancellationToken = default);
+        Task<BaseResponse<IEnumerable<VehicleResponseModel>>> SearchVehicle(string? keyword,CancellationToken cancellationToken = default);
         Task<bool> UpdateVehicle(UpdateVehicleRequestModel updateModel);
         Task<bool> ActivateVehicle(string vehicleId);
         Task<bool> Delete(string id);

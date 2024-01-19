@@ -66,7 +66,7 @@ namespace PTS_BUSINESS.Services.Implementations
                     OperationType = model.OperationType,
                     VehicleStatus = model.VehicleStatus,
                     VehicleType = model.VehicleType,
-                    RegistrationNumber = !string.IsNullOrWhiteSpace(model.RegistrationNumber.Trim()) ? model.Name.Trim() : null,
+                    RegistrationNumber = !string.IsNullOrWhiteSpace(model.RegistrationNumber.Trim()) ? model.RegistrationNumber.Trim() : null,
                     EngineNumber = !string.IsNullOrWhiteSpace(model.EngineNumber.Trim()) ? model.EngineNumber.Trim() : null,
                     IMEINumber = !string.IsNullOrWhiteSpace(model.IMEINumber.Trim()) ? model.IMEINumber.Trim() : null,
                     VehicleModel = !string.IsNullOrWhiteSpace(model.VehicleModel.Trim()) ? model.VehicleModel.Trim() : null,
@@ -255,6 +255,41 @@ namespace PTS_BUSINESS.Services.Implementations
             }
         }
 
+        public async Task<BaseResponse<IEnumerable<VehicleResponseModel>>> SearchVehicle(string? keyword, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var vehicles = await _vehicleRepository.SearchVehicle(keyword, cancellationToken);
+
+                if (vehicles != null)
+                {
+                    return new BaseResponse<IEnumerable<VehicleResponseModel>>
+                    {
+                        IsSuccess = true,
+                        Message = $"Vehicles retrieved successfully",
+                        Data = vehicles.Select(x => ReturnVehicleResponseModel(x)).ToList()
+                    };
+                }
+                else
+                {
+                    return new BaseResponse<IEnumerable<VehicleResponseModel>>
+                    {
+                        IsSuccess = false,
+                        Message = $"Vehicles failed to retrieve successfully",
+                    };
+                }
+            }
+            catch (Exception ex)
+            {
+                // Handle exceptions appropriately
+                return new BaseResponse<IEnumerable<VehicleResponseModel>>
+                {
+                    IsSuccess = false,
+                    Message = $"An error occurred while retrieving vehicles: {ex.Message}",
+                };
+            }
+        }
+
         public async Task<bool> UpdateVehicle(UpdateVehicleRequestModel updateModel)
         {
             if (updateModel != null)
@@ -269,20 +304,21 @@ namespace PTS_BUSINESS.Services.Implementations
 
                     // Update user properties based on your model
                     vehicle.Name = !string.IsNullOrWhiteSpace(updateModel.Name.Trim()) ? updateModel.Name.Trim() : vehicle.Name;
-                    vehicle.DriverId = !string.IsNullOrWhiteSpace(updateModel.DriverId.Trim()) ? updateModel.DriverId.Trim() : vehicle.DriverId;
-                    vehicle.TerminalId = !string.IsNullOrWhiteSpace(updateModel.TerminalId.Trim()) ? updateModel.TerminalId.Trim() : vehicle.TerminalId;
-                    vehicle.OperationType = updateModel.OperationType != null ? updateModel.OperationType : vehicle.OperationType;
-                    vehicle.VehicleStatus = updateModel.VehicleStatus != null ? updateModel.VehicleStatus : vehicle.VehicleStatus;
+                    vehicle.DriverId = updateModel.DriverId != null ? updateModel.DriverId.Trim() : vehicle.DriverId;
+                    vehicle.TerminalId = updateModel.TerminalId != null ? updateModel.TerminalId.Trim() : vehicle.TerminalId;
+                    vehicle.OperationType = (int)updateModel.OperationType > 0 ? updateModel.OperationType : vehicle.OperationType;
+                    vehicle.VehicleStatus = (int)updateModel.VehicleStatus > 0 ? updateModel.VehicleStatus : vehicle.VehicleStatus;
+                    vehicle.VehicleType = (int)updateModel.VehicleType > 0l ? updateModel.VehicleType : vehicle.VehicleType;
                     vehicle.RegistrationNumber = !string.IsNullOrWhiteSpace(updateModel.RegistrationNumber.Trim()) ? updateModel.RegistrationNumber.Trim() : vehicle.RegistrationNumber;
                     vehicle.EngineNumber = !string.IsNullOrWhiteSpace(updateModel.EngineNumber.Trim()) ? updateModel.EngineNumber.Trim() : vehicle.EngineNumber;
                     vehicle.IMEINumber = !string.IsNullOrWhiteSpace(updateModel.IMEINumber.Trim()) ? updateModel.IMEINumber.Trim() : vehicle.IMEINumber;
                     vehicle.VehicleModel = !string.IsNullOrWhiteSpace(updateModel.VehicleModel.Trim()) ? updateModel.VehicleModel.Trim() : vehicle.VehicleModel;
                     vehicle.NumberOfSeat = updateModel.NumberOfSeat.Value > 0 ? updateModel.NumberOfSeat.Value : vehicle.NumberOfSeat;
-                    vehicle.LicenseDate = updateModel.LicenseDate.Value != null ? updateModel.LicenseDate.Value : vehicle.LicenseDate;
-                    vehicle.LicenseExpirationDate = updateModel.LicenseExpirationDate.Value != null ? updateModel.LicenseExpirationDate.Value : vehicle.LicenseExpirationDate;
-                    vehicle.InsuranceDate = updateModel.InsuranceDate.Value != null ? updateModel.InsuranceDate.Value : vehicle.InsuranceDate;
-                    vehicle.RoadWorthinessDate = updateModel.RoadWorthinessDate.Value != null ? updateModel.RoadWorthinessDate.Value : vehicle.RoadWorthinessDate;
-                    vehicle.RoadWorthinessExpirationDate = updateModel.RoadWorthinessExpirationDate.Value != null ? updateModel.RoadWorthinessExpirationDate.Value : vehicle.RoadWorthinessExpirationDate;
+                    vehicle.LicenseDate = updateModel.LicenseDate != null ? updateModel.LicenseDate.Value : vehicle.LicenseDate;
+                    vehicle.LicenseExpirationDate = updateModel.LicenseExpirationDate != null ? updateModel.LicenseExpirationDate.Value : vehicle.LicenseExpirationDate;
+                    vehicle.InsuranceDate = updateModel.InsuranceDate != null ? updateModel.InsuranceDate.Value : vehicle.InsuranceDate;
+                    vehicle.RoadWorthinessDate = updateModel.RoadWorthinessDate != null ? updateModel.RoadWorthinessDate.Value : vehicle.RoadWorthinessDate;
+                    vehicle.RoadWorthinessExpirationDate = updateModel.RoadWorthinessExpirationDate != null ? updateModel.RoadWorthinessExpirationDate.Value : vehicle.RoadWorthinessExpirationDate;
                     vehicle.IsModified = true;
                     vehicle.LastModified = DateTime.Now;
                     vehicle.ModifierId = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? null;
@@ -315,7 +351,7 @@ namespace PTS_BUSINESS.Services.Implementations
                     OperationType = model.OperationType.Value,
                     VehicleStatus = model.VehicleStatus.Value,
                     RegistrationNumber = model.RegistrationNumber,
-                    EngineNumber = model.RegistrationNumber,
+                    EngineNumber = model.EngineNumber,
                     IMEINumber = model.IMEINumber,
                     VehicleModel = model.VehicleModel,
                     NumberOfSeat = model.NumberOfSeat,

@@ -28,5 +28,6 @@ namespace PTS_CORE.Domain.DataTransferObject.RequestModel.Account
         public DateTime? LastModified { get; set; }
         public DateTime? DateOfBirth { get; set; }
         public string? TerminalId { get; set; }
+        public string? PasswordOTP { get; set; }
     }
 }

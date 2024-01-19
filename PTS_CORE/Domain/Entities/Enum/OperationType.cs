@@ -8,6 +8,7 @@ namespace PTS_CORE.Domain.Entities.Enum
 {
     public enum OperationType
     {
+        Unknown = 0,
         IntraCity = 1,
         InterCity = 2,
         InterState = 3
