@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PTS_BUSINESS.Services.Interfaces;
 using PTS_CORE.Domain.DataTransferObject.RequestModel.StoreItem;
@@ -8,6 +9,7 @@ namespace PTS_API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class StaffAssetController : ControllerBase
     {
         private readonly IStaffAssetService _staffAssetService;
