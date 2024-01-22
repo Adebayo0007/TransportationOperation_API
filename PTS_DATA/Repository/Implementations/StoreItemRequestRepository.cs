@@ -35,7 +35,40 @@ namespace PTS_DATA.Repository.Implementations
         public async Task<IEnumerable<StoreItemRequest>> GetAllAsync(CancellationToken cancellationToken = default)
         {
             return await _db.StoreItemRequests
-           .Where(x => x.IsDeleted == false)
+           .Where(x => x.IsResolved == true)
+           .OrderByDescending(x => x.LastModified)
+           .ToListAsync(cancellationToken);
+        }
+
+        public async Task<IEnumerable<StoreItemRequest>> GetAllForAuditor(CancellationToken cancellationToken = default)
+        {
+            return await _db.StoreItemRequests
+          .Where(x => x.IsDeleted == false && (int)x.AvailabilityType == 1 && x.IsResolved == false && x.IsAuditorCommented == false)
+          .OrderByDescending(x => x.DateCreated)
+          .ToListAsync(cancellationToken);
+        }
+
+        public async Task<IEnumerable<StoreItemRequest>> GetAllForChirman(CancellationToken cancellationToken = default)
+        {
+            return await _db.StoreItemRequests
+         .Where(x => x.IsDeleted == false && (int)x.AvailabilityType == 1 &&
+         x.IsAuditorCommented == true && x.AuditorComment != null && x.IsDDPCommented == true && x.IsResolved == false)
+         .OrderByDescending(x => x.DateCreated)
+         .ToListAsync(cancellationToken);
+        }
+
+        public async Task<IEnumerable<StoreItemRequest>> GetAllForDDP(CancellationToken cancellationToken = default)
+        {
+            return await _db.StoreItemRequests
+          .Where(x => x.IsDeleted == false && (int)x.AvailabilityType == 1 && x.IsAuditorCommented == true && x.IsResolved == false && x.IsDDPCommented == false)
+          .OrderByDescending(x => x.DateCreated)
+          .ToListAsync(cancellationToken);
+        }
+
+        public async Task<IEnumerable<StoreItemRequest>> GetAllForStore(CancellationToken cancellationToken = default)
+        {
+            return await _db.StoreItemRequests
+           .Where(x => x.IsDeleted == false && x.AvailabilityType == null && x.IsResolved == false)
            .OrderByDescending(x => x.DateCreated)
            .ToListAsync(cancellationToken);
         }
@@ -60,6 +93,14 @@ namespace PTS_DATA.Repository.Implementations
             .Where(x => x.IsDeleted == true)
             .OrderByDescending(x => x.DeletedDate)
             .ToListAsync(cancellationToken);
+        }
+
+        public async Task<IEnumerable<StoreItemRequest>> MystoreItemRequest(string id, CancellationToken cancellationToken = default)
+        {
+            return await _db.StoreItemRequests
+           .Where(x => x.IsDeleted == false && x.CreatorId == id)
+           .OrderByDescending(x => x.DateCreated)
+           .ToListAsync(cancellationToken);
         }
 
         public async Task<IEnumerable<StoreItemRequest>> SearchStoreItemRequest(string? keyword, CancellationToken cancellationToken = default)

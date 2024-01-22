@@ -1,19 +1,12 @@
 ﻿using Microsoft.AspNetCore.Http;
+using PTS_BUSINESS.Common;
 using PTS_BUSINESS.Services.Interfaces;
 using PTS_CORE.Domain.DataTransferObject;
-using PTS_CORE.Domain.DataTransferObject.RequestModel.StoreItem;
-using PTS_CORE.Domain.DataTransferObject.RequestModel.Terminal;
 using PTS_CORE.Domain.DataTransferObject.StoreItemRequest;
 using PTS_CORE.Domain.Entities;
 using PTS_CORE.Domain.Entities.Enum;
-using PTS_DATA.Repository.Implementations;
 using PTS_DATA.Repository.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PTS_BUSINESS.Services.Implementations
 {
@@ -72,6 +65,7 @@ namespace PTS_BUSINESS.Services.Implementations
                     var terminal = await _terminalRepository.GetModelByNameAsync(storeItemRequest.TerminalName);
                     var storeAsset = await _storeAssetRepository.GetStoreAssetByTerminalIdAndStoreItemid(terminal.Id, storeItemRequest.StoreItemId);
                     if (terminal == null || storeItemRequest == null || storeAsset == null) return false;
+                    if(storeAsset.TotalQuantity < storeItemRequest.Quantity) return false;
                     storeAsset.TotalQuantity -= storeItemRequest.Quantity;
                     storeAsset.IsModified = true;
                     storeAsset.LastModified = DateTime.Now;
@@ -115,9 +109,9 @@ namespace PTS_BUSINESS.Services.Implementations
                     StoreItemId = !string.IsNullOrWhiteSpace(model.StoreItemId.Trim()) ? model.StoreItemId.Trim() : null,
                     StoreItemName = !string.IsNullOrWhiteSpace(storeItem.Name.Trim()) ? storeItem.Name : null,
                     ReasonForRequest = !string.IsNullOrWhiteSpace(model.ReasonForRequest.Trim()) ? model.ReasonForRequest.Trim() : null,
-                    VehicleRegistrationNumber = !string.IsNullOrWhiteSpace(model.VehicleRegistrationNumber.Trim()) ? model.VehicleRegistrationNumber.Trim() : null,
+                    VehicleRegistrationNumber = model.VehicleRegistrationNumber != null ? model.VehicleRegistrationNumber.Trim() : null,
                     StoreItemType = model.StoreItemType != null ? model.StoreItemType.Value : StoreItemType.Unknown,
-                    RequestType = model.RequestType != null ? model.RequestType.Value : RequestType.Unknown,
+                    RequestType = RequestType.NotFinancial,
                     Quantity = model.Quantity > 0 ? model.Quantity : 0,
                     CreatorId = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? null,
                     CreatorName = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.Email)?.Value ?? null,
@@ -196,7 +190,17 @@ namespace PTS_BUSINESS.Services.Implementations
         {
             try
             {
-                var storeItemRequest = await _storeItemRequestRepository.GetAllAsync(cancellationToken);
+                var role = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.Role).Value;
+                IEnumerable<StoreItemRequest> storeItemRequest = null;
+                if(role == RoleConstant.StoreManager)
+                   storeItemRequest = await _storeItemRequestRepository.GetAllForStore(cancellationToken);
+                if (role == RoleConstant.Auditor)
+                    storeItemRequest = await _storeItemRequestRepository.GetAllForAuditor(cancellationToken);
+                if (role == RoleConstant.DDP)
+                    storeItemRequest = await _storeItemRequestRepository.GetAllForDDP(cancellationToken);
+                if (role == RoleConstant.Chairman || role == RoleConstant.Administrator)
+                    storeItemRequest = await _storeItemRequestRepository.GetAllForChirman(cancellationToken);
+
 
                 if (storeItemRequest != null)
                 {
@@ -232,6 +236,67 @@ namespace PTS_BUSINESS.Services.Implementations
             try
             {
                 var storeItemRequest = await _storeItemRequestRepository.InactiveStoreItemRequest(cancellationToken);
+
+                if (storeItemRequest != null)
+                {
+                    return new BaseResponse<IEnumerable<StoreItemRequestResponseModel>>
+                    {
+                        IsSuccess = true,
+                        Message = $"store item request retrieved successfully",
+                        Data = storeItemRequest.Select(x => ReturnStoreItemRequestResponseModel(x)).ToList()
+                    };
+                }
+                else
+                {
+                    return new BaseResponse<IEnumerable<StoreItemRequestResponseModel>>
+                    {
+                        IsSuccess = false,
+                        Message = $"store item Request failed to retrieve successfully",
+                    };
+                }
+            }
+            catch (Exception ex)
+            {
+                // Handle exceptions appropriately
+                return new BaseResponse<IEnumerable<StoreItemRequestResponseModel>>
+                {
+                    IsSuccess = false,
+                    Message = $"An error occurred while retrieving store item requests: {ex.Message}",
+                };
+            }
+        }
+
+        public async Task<BaseResponse<IEnumerable<StoreItemRequestResponseModel>>> MystoreItemRequest(CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+                if (userId == null) { throw new NullReferenceException(); }
+                var storeItemRequest = await _storeItemRequestRepository.MystoreItemRequest(userId.Trim(), cancellationToken);
+                if (storeItemRequest == null) return new BaseResponse<IEnumerable<StoreItemRequestResponseModel>>
+                {
+                    IsSuccess = false,
+                    Message = $"store item request having  id {userId} is not found"
+                };
+                else
+                    return new BaseResponse<IEnumerable<StoreItemRequestResponseModel>>
+                    {
+                        IsSuccess = true,
+                        Message = $"store item having id {userId} retrieved successfully",
+                        Data = storeItemRequest.Select(x => ReturnStoreItemRequestResponseModel(x)).ToList()
+                    };
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public async  Task<BaseResponse<IEnumerable<StoreItemRequestResponseModel>>> ResolvedStoreItemRequest(CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var storeItemRequest = await _storeItemRequestRepository.GetAllAsync(cancellationToken);
 
                 if (storeItemRequest != null)
                 {
@@ -304,35 +369,39 @@ namespace PTS_BUSINESS.Services.Implementations
                 try
                 {
                     var storeItemRequest = await _storeItemRequestRepository.GetModelByIdAsync(updateModel.Id.Trim());
-                    StoreItem storeItem = null;
+                  /*  StoreItem storeItem = null;
                     if (updateModel.StoreItemId != null)
                     {
                         storeItem = await _storeIterRepository.GetModelByIdAsync(updateModel.StoreItemId);
-                    }
+                    }*/
                     // var role = updateModel.RoleName != null ? await _roleManager.FindByNameAsync(updateModel.RoleName.Trim()) : null;
 
                     if (storeItemRequest == null)
                         return false;
 
                     // Update user properties based on your model
-                    storeItemRequest.Description = !string.IsNullOrWhiteSpace(updateModel.Description.Trim()) ? updateModel.Description.Trim() : storeItemRequest.Description;
-                    storeItemRequest.TerminalName = !string.IsNullOrWhiteSpace(updateModel.TerminalName.Trim()) ? updateModel.TerminalName.Trim() : storeItemRequest.TerminalName;
-                    storeItemRequest.StoreItemId = !string.IsNullOrWhiteSpace(updateModel.StoreItemId.Trim()) ? updateModel.StoreItemId.Trim() : storeItemRequest.StoreItemId;
-                    storeItemRequest.ReasonForRequest = !string.IsNullOrWhiteSpace(updateModel.ReasonForRequest.Trim()) ? updateModel.ReasonForRequest.Trim() : storeItemRequest.ReasonForRequest;
-                    storeItemRequest.VehicleRegistrationNumber = !string.IsNullOrWhiteSpace(updateModel.VehicleRegistrationNumber.Trim()) ? updateModel.VehicleRegistrationNumber.Trim() : storeItemRequest.VehicleRegistrationNumber;
-                    storeItemRequest.DDPComment = !string.IsNullOrWhiteSpace(updateModel.DDPComment.Trim()) ? updateModel.DDPComment.Trim() : storeItemRequest.DDPComment;
-                    storeItemRequest.IsDDPCommented = updateModel.DDPComment != null ? true : false;
-                    storeItemRequest.AuditorComment = !string.IsNullOrWhiteSpace(updateModel.AuditorComment.Trim()) ? updateModel.AuditorComment.Trim() : storeItemRequest.AuditorComment;
-                    storeItemRequest.IsAuditorCommented = updateModel.AuditorComment != null ? true : false;
-                    storeItemRequest.StoreItemName = storeItem != null ? storeItem.Name : storeItemRequest.StoreItemName;
-                    storeItemRequest.StoreItemType = updateModel.StoreItemType != null || updateModel.StoreItemType != 0 ? updateModel.StoreItemType.Value : storeItemRequest.StoreItemType;
-                    storeItemRequest.RequestType = updateModel.RequestType != null || updateModel.RequestType != 0 ? updateModel.RequestType.Value : storeItemRequest.RequestType;
-                    storeItemRequest.AvailabilityType = updateModel.AvailabilityType != null || updateModel.AvailabilityType != 0 ? updateModel.AvailabilityType.Value : storeItemRequest.AvailabilityType;
+                    storeItemRequest.Description = !string.IsNullOrWhiteSpace(updateModel.Description.Trim()) && updateModel.Description != null ? updateModel.Description.Trim() : storeItemRequest.Description;
+                  //  storeItemRequest.TerminalName = !string.IsNullOrWhiteSpace(updateModel.TerminalName.Trim()) ? updateModel.TerminalName.Trim() : storeItemRequest.TerminalName;
+                  //  storeItemRequest.StoreItemId = !string.IsNullOrWhiteSpace(updateModel.StoreItemId.Trim()) ? updateModel.StoreItemId.Trim() : storeItemRequest.StoreItemId;
+                    storeItemRequest.ReasonForRequest = !string.IsNullOrWhiteSpace(updateModel.ReasonForRequest.Trim()) && updateModel.ReasonForRequest != null ? updateModel.ReasonForRequest.Trim() : storeItemRequest.ReasonForRequest;
+                    //storeItemRequest.VehicleRegistrationNumber = !string.IsNullOrWhiteSpace(updateModel.VehicleRegistrationNumber.Trim()) ? updateModel.VehicleRegistrationNumber.Trim() : storeItemRequest.VehicleRegistrationNumber;
+                    storeItemRequest.DDPComment = updateModel.DDPComment != null ? updateModel.DDPComment.Trim() : $"Awaiting {RoleConstant.DDP}'s Comment";
+                    storeItemRequest.IsDDPCommented = updateModel.DDPComment != null && updateModel.DDPComment != $"Awaiting {RoleConstant.DDP}'s Comment" ? true : false;
+                    storeItemRequest.AuditorComment = updateModel.AuditorComment != null ? updateModel.AuditorComment.Trim() : $"Awaiting {RoleConstant.Auditor}'s Comment";
+                    storeItemRequest.IsAuditorCommented = updateModel.AuditorComment != null && updateModel.AuditorComment != $"Awaiting {RoleConstant.Auditor}'s Comment" ? true : false;
+                    //storeItemRequest.StoreItemName = storeItem != null ? storeItem.Name : storeItemRequest.StoreItemName;
+                    //storeItemRequest.StoreItemType = updateModel.StoreItemType != null || updateModel.StoreItemType != 0 ? updateModel.StoreItemType.Value : storeItemRequest.StoreItemType;
                     storeItemRequest.Quantity = updateModel.Quantity >0 ? updateModel.Quantity.Value : storeItemRequest.Quantity;
                     storeItemRequest.IsModified = true;
                     storeItemRequest.LastModified = DateTime.Now;
                     storeItemRequest.ModifierId = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? null;
                     storeItemRequest.ModifierName = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.Email)?.Value ?? null;
+                    string role = null;
+                    role = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.Role).Value;
+                    if (role == RoleConstant.StoreManager)
+                    {
+                        storeItemRequest.AvailabilityType = updateModel.AvailabilityType != null || updateModel.AvailabilityType != 0 ? updateModel.AvailabilityType.Value : storeItemRequest.AvailabilityType;
+                    }
 
                     // Update other properties as needed
                     await _storeItemRequestRepository.UpdateAsync(storeItemRequest);

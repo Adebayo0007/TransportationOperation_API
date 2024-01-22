@@ -97,6 +97,26 @@ namespace PTS_API.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpGet]
+        [Route("EmployeeBirthdayNotification")]
+        public async Task<IActionResult> EmployeeBirthdayNotification(CancellationToken cancellationToken)
+        {
+            try
+            {
+                var result = await _employeeService.EmployeeBirthdayNotification(cancellationToken);
+                if (result.IsSuccess == true)
+                {
+                    return Ok(result);
+                }
+                return BadRequest(new { Message = "internal error, please try again later..." });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpGet]
         [Route("SearchEmployee/{keyword}")]
         public async Task<IActionResult> SearchEmployee(string keyword, CancellationToken cancellationToken)

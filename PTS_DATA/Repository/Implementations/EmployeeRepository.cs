@@ -31,6 +31,21 @@ namespace PTS_DATA.Repository.Implementations
             await _db.SaveChangesAsync();
         }
 
+        public async  Task<IEnumerable<Employee>> EmployeeBirthdayNotification(CancellationToken cancellationToken = default)
+        {
+            DateTime currentDate = DateTime.Now;
+            DateTime oneDayAhead = currentDate.AddDays(1);
+            DateTime threeDaysAhead = currentDate.AddDays(3);
+            var result = await _db.Employees
+               .Include(x => x.ApplicationUser)
+               .Where(x => x.ApplicationUser.DateOfBirth.Value.Date.Month == currentDate.Month &&
+               x.ApplicationUser.DateOfBirth.Value.Date.Day >= currentDate.Day &&
+               x.ApplicationUser.DateOfBirth.Value.Date.Day <= threeDaysAhead.Day)
+               .OrderBy(x => x.ApplicationUser.DateOfBirth.Value.Date)
+               .ToListAsync(cancellationToken);
+            return result;
+        }
+
         public async Task<IEnumerable<Employee>> GetAllAsync(CancellationToken cancellationToken = default)
         {
             return await _db.Employees

@@ -11,6 +11,11 @@ namespace PTS_DATA.Repository.Interfaces
     {
         Task<StoreItemRequest> GetModelByIdAsync(string id);
         Task<IEnumerable<StoreItemRequest>> InactiveStoreItemRequest(CancellationToken cancellationToken = default);
+        Task<IEnumerable<StoreItemRequest>> GetAllForAuditor(CancellationToken cancellationToken = default);
+        Task<IEnumerable<StoreItemRequest>> GetAllForDDP(CancellationToken cancellationToken = default);
+        Task<IEnumerable<StoreItemRequest>> GetAllForChirman(CancellationToken cancellationToken = default);
+        Task<IEnumerable<StoreItemRequest>> GetAllForStore(CancellationToken cancellationToken = default);
+        Task<IEnumerable<StoreItemRequest>> MystoreItemRequest(string id,CancellationToken cancellationToken = default);
         Task<IEnumerable<StoreItemRequest>> SearchStoreItemRequest(string? keyword, CancellationToken cancellationToken = default);
     }
 }

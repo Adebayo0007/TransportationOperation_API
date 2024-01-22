@@ -20,16 +20,11 @@ namespace PTS_API.Controllers
         private readonly IAccountService _accountService;
         private readonly IJWTAuthentication _jwtAuth;
         private readonly IEmailSender _emailSender;
-        // private readonly IDistributedCache _distributedCache;
-        //private readonly ITokenInvalidationService _tokenInvalidationService;
-
         public AccountController(IAccountService accountService, IJWTAuthentication jwtAuth, IEmailSender emailSender)
         {
             _accountService = accountService;
             _jwtAuth = jwtAuth;
             _emailSender = emailSender;
-            //_distributedCache = distributedCache;
-            //_tokenInvalidationService = tokenInvalidationService;
         }
 
 

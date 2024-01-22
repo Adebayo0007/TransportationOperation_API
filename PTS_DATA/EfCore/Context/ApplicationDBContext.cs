@@ -37,6 +37,7 @@ namespace PTS_DATA.EfCore.Context
         public DbSet<Sales> Sales { get; set; }
         public DbSet<Expenditure> Expenditures { get; set; }
         public DbSet<StaffAssets> StaffAssets { get; set; }
+        public DbSet<BudgetTracking> BudgetTrackings { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

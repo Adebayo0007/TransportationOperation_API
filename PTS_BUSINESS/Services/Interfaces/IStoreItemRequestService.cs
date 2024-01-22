@@ -15,7 +15,9 @@ namespace PTS_BUSINESS.Services.Interfaces
         Task<BaseResponse<IEnumerable<StoreItemRequestResponseModel>>> Get(string id);
         Task<BaseResponse<IEnumerable<StoreItemRequestResponseModel>>> GetAllStoreItemRequests(CancellationToken cancellationToken = default);
         Task<BaseResponse<IEnumerable<StoreItemRequestResponseModel>>> GetInactiveStoreItemRequest(CancellationToken cancellationToken = default);
+        Task<BaseResponse<IEnumerable<StoreItemRequestResponseModel>>> ResolvedStoreItemRequest(CancellationToken cancellationToken = default);
         Task<BaseResponse<IEnumerable<StoreItemRequestResponseModel>>> SearchStoreItemRequests(string? keyword, CancellationToken cancellationToken = default);
+        Task<BaseResponse<IEnumerable<StoreItemRequestResponseModel>>> MystoreItemRequest(CancellationToken cancellationToken = default);
         Task<bool> UpdateStoreItemRequest(UpdateStoreItemRequestRequestModel updateModel);
         Task<bool> ApproveRequest(string id);
         Task<bool> ActivateStoreItemRequest(string id);

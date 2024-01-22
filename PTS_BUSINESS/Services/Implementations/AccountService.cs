@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using PTS_BUSINESS.Common;
 using PTS_BUSINESS.Services.Interfaces;
 using PTS_CORE.Domain.DataTransferObject;
 using PTS_CORE.Domain.DataTransferObject.Email;
@@ -128,7 +129,8 @@ namespace PTS_BUSINESS.Services.Implementations
                                 RoleName = user.RoleName,
                                 IsDeleted = user.IsDeleted,
                                 Email = user.Email,
-                                Phonenumber = user.PhoneNumber
+                                Phonenumber = user.PhoneNumber,
+                                Gender = user.Gender
                             }
                         };
                     }
@@ -404,7 +406,7 @@ namespace PTS_BUSINESS.Services.Implementations
         {
             try
             {
-                var role = await _roleManager.Roles.Where(x =>x.IsDeleted == false).ToListAsync();
+                var role = await _roleManager.Roles.Where(x =>x.IsDeleted == false && x.Name != RoleConstant.Chairman && x.Name != RoleConstant.Administrator).ToListAsync();
                 if (role != null)
                     return new BaseResponse<IEnumerable<ApplicationRoleDto>>
                     {

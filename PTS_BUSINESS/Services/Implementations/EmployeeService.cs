@@ -279,6 +279,40 @@ namespace PTS_BUSINESS.Services.Implementations
                 throw;
             }
         }
+        public async Task<BaseResponse<IEnumerable<EmployeeResponseModel>>> EmployeeBirthdayNotification(CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var employees = await _employeeRepository.EmployeeBirthdayNotification(cancellationToken);
+
+                if (employees != null)
+                {
+                    return new BaseResponse<IEnumerable<EmployeeResponseModel>>
+                    {
+                        IsSuccess = true,
+                        Message = $"Employees retrieved successfully",
+                        Data = employees.Select(x => ReturnEmployeeResponseModel(x)).ToList()
+                    };
+                }
+                else
+                {
+                    return new BaseResponse<IEnumerable<EmployeeResponseModel>>
+                    {
+                        IsSuccess = false,
+                        Message = $"Employees failed to retrieve successfully",
+                    };
+                }
+            }
+            catch (Exception ex)
+            {
+                // Handle exceptions appropriately
+                return new BaseResponse<IEnumerable<EmployeeResponseModel>>
+                {
+                    IsSuccess = false,
+                    Message = $"An error occurred while retrieving employees: {ex.Message}",
+                };
+            }
+        }
 
         public async Task<BaseResponse<IEnumerable<EmployeeResponseModel>>> SearchEmployee(string? keyword, CancellationToken cancellationToken = default)
         {
@@ -333,6 +367,7 @@ namespace PTS_BUSINESS.Services.Implementations
                 LastName = model.ApplicationUser.LastName,
                 RoleName = model.ApplicationUser.RoleName,
                 Phonenumber = model.ApplicationUser.PhoneNumber,
+                DateOfBirth = model.ApplicationUser.DateOfBirth,
                 Email = model.ApplicationUser.Email,
                 Gender = model.ApplicationUser.Gender,
                 IsDeleted = model.IsDeleted,

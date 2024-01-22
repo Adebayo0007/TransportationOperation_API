@@ -65,7 +65,6 @@ namespace PTS_DATA.Repository.Implementations
         {
             return await _db.StaffAssets
               .Where(x => x.Owner.Contains(keyword.Trim()) || x.Owner.ToLower() == keyword.Trim().ToLower() ||
-              x.CreatorName.Contains(keyword.Trim()) || x.CreatorName.ToLower() == keyword.Trim().ToLower() ||
                x.StoreItemName.Contains(keyword.Trim()) || x.StoreItemName.ToLower() == keyword.Trim().ToLower()) 
               .OrderByDescending(x => x.DateCreated)
               .ToListAsync(cancellationToken);

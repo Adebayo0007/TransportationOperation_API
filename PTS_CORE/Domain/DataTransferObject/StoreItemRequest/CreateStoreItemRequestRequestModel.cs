@@ -19,8 +19,6 @@ namespace PTS_CORE.Domain.DataTransferObject.StoreItemRequest
         [Required]
         public string ReasonForRequest { get; set; }
         [Required]
-        public RequestType? RequestType { get; set; }
-        [Required]
         public long Quantity { get; set; }
         [Required]
         public StoreItemType? StoreItemType { get; set; }

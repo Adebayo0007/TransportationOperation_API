@@ -13,13 +13,12 @@ namespace PTS_CORE.Domain.DataTransferObject.StoreItemRequest
         [Required]
         public string Id { get; set; }
         public string? Description { get; set; }
-        public string? TerminalName { get; set; }
-        public string? StoreItemId { get; set; }
+     /*   public string? TerminalName { get; set; }
+        public string? StoreItemId { get; set; }*/
         public string? ReasonForRequest { get; set; }
         public long? Quantity { get; set; } 
-        public StoreItemType? StoreItemType { get; set; }
-        public string? VehicleRegistrationNumber { get; set; }
-        public RequestType? RequestType { get; set; }
+       // public StoreItemType? StoreItemType { get; set; }
+        //public string? VehicleRegistrationNumber { get; set; }
         public AvailabilityType? AvailabilityType { get; set; }
         public string? DDPComment { get; set; }
         public string? AuditorComment { get; set; }
