@@ -398,6 +398,9 @@ namespace PTS_DATA.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsApprove")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
@@ -419,6 +422,10 @@ namespace PTS_DATA.Migrations
                     b.Property<int>("OperationType")
                         .HasColumnType("int");
 
+                    b.Property<string>("PartnerName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Reciept")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -429,71 +436,6 @@ namespace PTS_DATA.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("BusBrandings");
-                });
-
-            modelBuilder.Entity("PTS_CORE.Domain.Entities.BusBrandingRequest", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<double>("Amount")
-                        .HasColumnType("float");
-
-                    b.Property<string>("AuditorComment")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("AvailabilityType")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("BrandEndDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("BrandStartDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("DDPComment")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool?>("IsAuditorCommented")
-                        .HasColumnType("bit");
-
-                    b.Property<bool?>("IsAvailable")
-                        .HasColumnType("bit");
-
-                    b.Property<bool?>("IsChairmanApproved")
-                        .HasColumnType("bit");
-
-                    b.Property<bool?>("IsDDPCommented")
-                        .HasColumnType("bit");
-
-                    b.Property<bool?>("IsResolved")
-                        .HasColumnType("bit");
-
-                    b.Property<bool?>("IsVerified")
-                        .HasColumnType("bit");
-
-                    b.Property<long>("NumberOfVehicle")
-                        .HasColumnType("bigint");
-
-                    b.Property<int>("OperationType")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Reciept")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("RequestType")
-                        .HasColumnType("int");
-
-                    b.Property<int>("VehicleType")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("BusBrandingRequests");
                 });
 
             modelBuilder.Entity("PTS_CORE.Domain.Entities.Complain", b =>
@@ -555,6 +497,9 @@ namespace PTS_DATA.Migrations
                     b.Property<string>("ApplicationUserId")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<DateTime>("AppointmentDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("CreatorId")
                         .HasColumnType("nvarchar(max)");
 
@@ -603,13 +548,16 @@ namespace PTS_DATA.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<string>("AuditorComment")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CreatorId")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CreatorName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DDPComment")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("DateCreated")
@@ -621,11 +569,38 @@ namespace PTS_DATA.Migrations
                     b.Property<DateTime?>("DeletedDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool?>("IsApproved")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("IsAuditorCommented")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("IsChairmanApproved")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("IsDDPCommented")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("IsDenied")
                         .HasColumnType("bit");
 
                     b.Property<bool?>("IsModified")
                         .HasColumnType("bit");
+
+                    b.Property<bool?>("IsProcurementApproved")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("IsResolved")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("IsVerified")
+                        .HasColumnType("bit");
+
+                    b.Property<long?>("ItemQuantity")
+                        .HasColumnType("bigint");
 
                     b.Property<DateTime?>("LastModified")
                         .HasColumnType("datetime2");
@@ -639,6 +614,24 @@ namespace PTS_DATA.Migrations
                     b.Property<string>("Purpose")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("RequestType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("StoreItemId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("StoreItemName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TerminalId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TerminalName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("UnitPrice")
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 
@@ -665,6 +658,10 @@ namespace PTS_DATA.Migrations
                     b.Property<string>("CreatorName")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Customer")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime?>("DateCreated")
                         .HasColumnType("datetime2");
 
@@ -681,7 +678,7 @@ namespace PTS_DATA.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("DepartureTerminalId")
+                    b.Property<string>("DepartureTerminalName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -690,11 +687,13 @@ namespace PTS_DATA.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("DriverUserId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<double>("Fuel")
                         .HasColumnType("float");
+
+                    b.Property<bool>("IsChairmanApprove")
+                        .HasColumnType("bit");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -705,114 +704,34 @@ namespace PTS_DATA.Migrations
                     b.Property<DateTime?>("LastModified")
                         .HasColumnType("datetime2");
 
-                    b.Property<double>("Maintenance")
-                        .HasColumnType("float");
-
                     b.Property<string>("ModifierId")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ModifierName")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("OperationType")
+                        .HasColumnType("int");
+
                     b.Property<double>("Profit")
                         .HasColumnType("float");
 
-                    b.Property<string>("RecieptImage")
+                    b.Property<string>("RecieptAndInvoice")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("ResolvedByDepo")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("ResolvedByOperation")
+                        .HasColumnType("bit");
+
                     b.Property<string>("VehicleId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.ToTable("HireVehicles");
-                });
-
-            modelBuilder.Entity("PTS_CORE.Domain.Entities.HireVehicleRequest", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<double>("Amount")
-                        .HasColumnType("float");
-
-                    b.Property<DateTime>("ArrivalDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("AuditorComment")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("AvailabilityType")
-                        .HasColumnType("int");
-
-                    b.Property<double>("CostOfExacution")
-                        .HasColumnType("float");
-
-                    b.Property<string>("DDPComment")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("DeapartureDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("DepartureAddress")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("DepartureTerminalId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("DestinationAddress")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("DriverUserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<double>("Fuel")
-                        .HasColumnType("float");
-
-                    b.Property<bool?>("IsAuditorCommented")
-                        .HasColumnType("bit");
-
-                    b.Property<bool?>("IsAvailable")
-                        .HasColumnType("bit");
-
-                    b.Property<bool?>("IsChairmanApproved")
-                        .HasColumnType("bit");
-
-                    b.Property<bool?>("IsDDPCommented")
-                        .HasColumnType("bit");
-
-                    b.Property<bool?>("IsResolved")
-                        .HasColumnType("bit");
-
-                    b.Property<bool?>("IsVerified")
-                        .HasColumnType("bit");
-
-                    b.Property<double>("Maintenance")
-                        .HasColumnType("float");
-
-                    b.Property<double>("Profit")
-                        .HasColumnType("float");
-
-                    b.Property<string>("RecieptImage")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("RequestType")
-                        .HasColumnType("int");
-
-                    b.Property<string>("VehicleId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("HireVehicleRequests");
                 });
 
             modelBuilder.Entity("PTS_CORE.Domain.Entities.Leave", b =>
@@ -1035,9 +954,6 @@ namespace PTS_DATA.Migrations
                         .HasColumnType("bit");
 
                     b.Property<bool?>("IsModified")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsPaid")
                         .HasColumnType("bit");
 
                     b.Property<DateTime?>("LastModified")

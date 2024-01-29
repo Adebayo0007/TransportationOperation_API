@@ -13,5 +13,6 @@ namespace PTS_CORE.Domain.Entities
         public ApplicationUser ApplicationUser { get; set; }
         public string? TerminalId { get; set; }
         public string? StaffIdentityCardNumber { get; set; }
+        public DateTime AppointmentDate { get; set; }
     }
 }

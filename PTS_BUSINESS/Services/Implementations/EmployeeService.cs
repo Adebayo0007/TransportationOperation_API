@@ -63,7 +63,8 @@ namespace PTS_BUSINESS.Services.Implementations
                         StaffIdentityCardNumber = model.StaffIdentityCardNumber.Trim() ?? string.Empty,
                         TerminalId = model.TerminalId.Trim() ?? string.Empty,
                         CreatorId = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? null,
-                        CreatorName = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.Email)?.Value ?? null
+                        CreatorName = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.Email)?.Value ?? null,
+                        AppointmentDate = model.AppointmentDate
                     };
                    var response = await _employeeRepository.CreateAsync(employee);
                     if (response == false) return false;
@@ -380,7 +381,8 @@ namespace PTS_BUSINESS.Services.Implementations
                 ModifierName = model.ModifierName,
                 ModifierId = model.ModifierId,
                 LastModified = model.LastModified,
-                TerminalId = model.TerminalId
+                TerminalId = model.TerminalId,
+                AppointmentDate = model.AppointmentDate
 
             };
         }

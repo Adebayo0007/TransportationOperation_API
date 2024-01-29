@@ -31,5 +31,6 @@ namespace PTS_CORE.Domain.DataTransferObject.RequestModel.Employee
         public string? TerminalId { get; set; }
         public DateTime? LastModified { get; set; }
         public DateTime? DateOfBirth { get; set; }
+        public DateTime? AppointmentDate { get; set; }
     }
 }

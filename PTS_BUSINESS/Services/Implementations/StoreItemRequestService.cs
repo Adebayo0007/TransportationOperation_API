@@ -386,9 +386,9 @@ namespace PTS_BUSINESS.Services.Implementations
                     storeItemRequest.ReasonForRequest = !string.IsNullOrWhiteSpace(updateModel.ReasonForRequest.Trim()) && updateModel.ReasonForRequest != null ? updateModel.ReasonForRequest.Trim() : storeItemRequest.ReasonForRequest;
                     //storeItemRequest.VehicleRegistrationNumber = !string.IsNullOrWhiteSpace(updateModel.VehicleRegistrationNumber.Trim()) ? updateModel.VehicleRegistrationNumber.Trim() : storeItemRequest.VehicleRegistrationNumber;
                     storeItemRequest.DDPComment = updateModel.DDPComment != null ? updateModel.DDPComment.Trim() : $"Awaiting {RoleConstant.DDP}'s Comment";
-                    storeItemRequest.IsDDPCommented = updateModel.DDPComment != null && updateModel.DDPComment != $"Awaiting {RoleConstant.DDP}'s Comment" ? true : false;
+                    storeItemRequest.IsDDPCommented = updateModel.DDPComment != null && updateModel.DDPComment != $"Awaiting {RoleConstant.DDP}'s Comment" ? true : storeItemRequest.IsDDPCommented;
                     storeItemRequest.AuditorComment = updateModel.AuditorComment != null ? updateModel.AuditorComment.Trim() : $"Awaiting {RoleConstant.Auditor}'s Comment";
-                    storeItemRequest.IsAuditorCommented = updateModel.AuditorComment != null && updateModel.AuditorComment != $"Awaiting {RoleConstant.Auditor}'s Comment" ? true : false;
+                    storeItemRequest.IsAuditorCommented = updateModel.AuditorComment != null && updateModel.AuditorComment != $"Awaiting {RoleConstant.Auditor}'s Comment" ? true : storeItemRequest.IsAuditorCommented;
                     //storeItemRequest.StoreItemName = storeItem != null ? storeItem.Name : storeItemRequest.StoreItemName;
                     //storeItemRequest.StoreItemType = updateModel.StoreItemType != null || updateModel.StoreItemType != 0 ? updateModel.StoreItemType.Value : storeItemRequest.StoreItemType;
                     storeItemRequest.Quantity = updateModel.Quantity >0 ? updateModel.Quantity.Value : storeItemRequest.Quantity;

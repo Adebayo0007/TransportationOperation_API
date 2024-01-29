@@ -11,13 +11,15 @@ namespace PTS_CORE.Domain.Entities
     public class BusBranding : BaseEntity
     {
         public string Id { get; set; } = Guid.NewGuid().ToString();
+        public string PartnerName { get; set; }
         public long NumberOfVehicle { get; set; }
         public DateTime BrandStartDate { get; set; }
         public DateTime BrandEndDate { get; set; }
         public bool IsActive { get; set; }
-        public OperandType OperationType { get; set; }
+        public OperationType OperationType { get; set; }
         public VehicleType VehicleType { get; set; }
         public string Reciept { get; set; }
         public double Amount { get; set; }
+        public bool IsApprove { get; set; }
     }
 }

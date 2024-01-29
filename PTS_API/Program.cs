@@ -19,6 +19,7 @@ using PTS_DATA.Repository.Implementations;
 using PTS_DATA.Repository.Interfaces;
 using sib_api_v3_sdk.Client;
 using System.Net.Mail;
+using System.Runtime.ConstrainedExecution;
 using System.Text;
 
 namespace PTS_API
@@ -161,12 +162,25 @@ namespace PTS_API
             builder.Services.AddScoped<IStoreAssetService, StoreAssetService>();
 
             builder.Services.AddScoped<IStaffAssetRepository, StaffAssetRepository>();
-            builder.Services.AddScoped<IStaffAssetService, StaffAssetService>();
-
-            builder.Services.AddScoped<IEmailSender, EmailSender>();
+            builder.Services.AddScoped<IStaffAssetService, StaffAssetService>(); 
+            
+            builder.Services.AddScoped<IBudgetTrackingRepository, BudgetTrackingRepository>();
+            builder.Services.AddScoped<IBudgetTrackingService, BudgetTrackingService>();
 
             builder.Services.AddScoped<IExpenditureRepository, ExpenditureRepository>();
+            builder.Services.AddScoped<IExpenditureService, ExpenditureService>(); 
+            
+            builder.Services.AddScoped<IBusBrandingRepository, BusBrandingRepository>();
+            builder.Services.AddScoped<IBusBrandingService, BusBrandingService>();
+
+            builder.Services.AddScoped<IHireVehicleRepository, HireVehicleRepository>();
+            builder.Services.AddScoped<IHireVehicleService, HireVehicleService>();
+
             builder.Services.AddScoped<ISaleRepository, SaleRepository>();
+            builder.Services.AddScoped<ISaleService, SaleService>();
+
+            builder.Services.AddScoped<IEmailSender, EmailSender>();
+         
 
 
             //builder.Services.AddScoped<ITokenInvalidationService, TokenInvalidationService>();

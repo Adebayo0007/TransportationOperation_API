@@ -172,6 +172,10 @@ namespace PTS_BUSINESS.Services.Implementations
                 var leave = await _leaveRepository.GetModelByIdAsync(id.Trim());
                 leave.IsGranted = false;
                 leave.IsDenied = true;
+                leave.IsModified = true;
+                leave.LastModified = DateTime.Now;
+                leave.ModifierId = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? null;
+                leave.ModifierName = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.Email)?.Value ?? null;
                 await _leaveRepository.UpdateAsync(leave);
             }
         }
@@ -183,6 +187,10 @@ namespace PTS_BUSINESS.Services.Implementations
                 var leave = await _leaveRepository.GetModelByIdAsync(id.Trim());
                 leave.IsDenied = false;
                 leave.IsGranted = true;
+                leave.IsModified = true;
+                leave.LastModified = DateTime.Now;
+                leave.ModifierId = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? null;
+                leave.ModifierName = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.Email)?.Value ?? null;
                 await _leaveRepository.UpdateAsync(leave);
             }
         }
@@ -193,6 +201,10 @@ namespace PTS_BUSINESS.Services.Implementations
             {
                 var leave = await _leaveRepository.GetModelByIdAsync(id.Trim());
                 leave.IsOpened = true;
+                leave.IsModified = true;
+                leave.LastModified = DateTime.Now;
+                leave.ModifierId = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? null;
+                leave.ModifierName = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.Email)?.Value ?? null;
                 await _leaveRepository.UpdateAsync(leave);
             }
         }

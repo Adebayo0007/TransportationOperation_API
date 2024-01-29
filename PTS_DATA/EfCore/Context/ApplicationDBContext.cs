@@ -19,10 +19,9 @@ namespace PTS_DATA.EfCore.Context
             : base(options)
         {
         }
-        public DbSet<BusBrandingRequest> BusBrandingRequests { get; set; }
+    
         public DbSet<BusBranding> BusBrandings { get; set; }
         public DbSet<Employee> Employees { get; set; }
-        public DbSet<HireVehicleRequest> HireVehicleRequests { get; set; }
         public DbSet<HireVehicle> HireVehicles { get; set; }
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<OtherRequest> OtherRequests { get; set; }

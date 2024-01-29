@@ -74,6 +74,7 @@ namespace PTS_API.Controllers
         {
             try
             {
+                
                 if (!ModelState.IsValid) { return BadRequest("Your credentials are not valid, please check your inputs"); }
                 var result = await _accountService.Login(model);
                 if (result.IsSuccessful == true)

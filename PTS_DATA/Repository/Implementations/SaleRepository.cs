@@ -52,6 +52,21 @@ namespace PTS_DATA.Repository.Implementations
                          .SingleOrDefaultAsync(x => x.Id.ToLower() == id.ToLower());
         }
 
+        public async Task<IEnumerable<Sales>> InactiveSaleRequest(CancellationToken cancellationToken = default)
+        {
+            return await _db.Sales
+                          .Where(x => x.IsDeleted == true)
+                          .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Sales>> SearchSale(string? keyword, CancellationToken cancellationToken = default)
+        {
+            return await _db.Sales
+          .Where(x => x.Description.Contains(keyword.Trim()) || x.Description.ToLower() == keyword.Trim().ToLower())
+          .OrderByDescending(x => x.DateCreated)
+          .ToListAsync(cancellationToken);
+        }
+
         public async Task UpdateAsync(Sales entity)
         {
             await _db.SaveChangesAsync();

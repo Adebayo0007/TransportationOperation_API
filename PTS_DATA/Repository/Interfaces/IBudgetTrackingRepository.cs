@@ -12,5 +12,6 @@ namespace PTS_DATA.Repository.Interfaces
         Task<BudgetTracking> GetModelByIdAsync(string id);
         Task<IEnumerable<BudgetTracking>> InactiveBudgetTrackings(CancellationToken cancellationToken = default);
         Task<IEnumerable<BudgetTracking>> SearchBudgetTrackings(DateTime? start,DateTime? to, CancellationToken cancellationToken = default);
+        Task<BudgetTracking> FindBudget(DateTime? resolvedDate);
     }
 }

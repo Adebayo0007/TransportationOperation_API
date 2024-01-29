@@ -29,5 +29,7 @@ namespace PTS_CORE.Domain.DataTransferObject.RequestModel.Employee
         public string StaffIdentityCardNumber { get; set; }
         [Required]
         public string TerminalId { get; set; }
+        [Required]
+        public DateTime AppointmentDate { get; set; }
     }
 }

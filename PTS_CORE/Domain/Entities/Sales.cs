@@ -13,6 +13,5 @@ namespace PTS_CORE.Domain.Entities
         public decimal Quantity { get; set; }
         public decimal UnitPrice { get; set; }
         public decimal TotalAmount { get; set; }
-        public bool IsPaid { get; set; } = false;
     }
 }
