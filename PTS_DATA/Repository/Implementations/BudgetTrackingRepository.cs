@@ -77,6 +77,12 @@ namespace PTS_DATA.Repository.Implementations
             .ToListAsync(cancellationToken);
         }
 
+        public async Task<decimal> ThisYearBudgetTrackings(CancellationToken cancellationToken = default)
+        {
+            return await _db.BudgetTrackings
+         .Where(x => x.IsDeleted == false && x.StartDate.Date.Year == DateTime.Now.Date.Year && x.EndDate.Date.Year == DateTime.Now.Date.Year).SumAsync(x => x.BudgetedAmount);
+        }
+
         public async Task UpdateAsync(BudgetTracking entity)
         {
             await _db.SaveChangesAsync();

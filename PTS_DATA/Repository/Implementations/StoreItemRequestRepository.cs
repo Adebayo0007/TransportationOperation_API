@@ -103,6 +103,36 @@ namespace PTS_DATA.Repository.Implementations
            .ToListAsync(cancellationToken);
         }
 
+        public async Task<long> NumberOfMyrequest(string mail)
+        {
+            return await _db.StoreItemRequests
+         .Where(x => (x.CreatorName.Contains(mail.Trim()) || x.CreatorName.ToLower() == mail.Trim().ToLower()) && x.IsResolved == true).CountAsync();
+        }
+        public async Task<long> NumberOfRequestForAuditor()
+        {
+            return await _db.StoreItemRequests
+          .Where(x => x.IsDeleted == false && (int)x.AvailabilityType == 1 && x.IsResolved == false && x.IsAuditorCommented == false).CountAsync();
+        }
+
+        public async Task<long> NumberOfRequestForChairman()
+        {
+            return await _db.StoreItemRequests
+            .Where(x => x.IsDeleted == false && (int)x.AvailabilityType == 1 &&
+            x.IsAuditorCommented == true && x.AuditorComment != null && x.IsDDPCommented == true && x.IsResolved == false).CountAsync();
+        }
+
+        public async Task<long> NumberOfRequestForDDP()
+        {
+            return await _db.StoreItemRequests
+        .Where(x => x.IsDeleted == false && (int)x.AvailabilityType == 1 && x.IsAuditorCommented == true && x.IsResolved == false && x.IsDDPCommented == false).CountAsync();
+        }
+
+        public async Task<long> NumberOfRequestForStore()
+        {
+            return await _db.StoreItemRequests
+          .Where(x => x.IsDeleted == false && x.AvailabilityType == null && x.IsResolved == false).CountAsync();
+        }
+
         public async Task<IEnumerable<StoreItemRequest>> SearchStoreItemRequest(string? keyword, CancellationToken cancellationToken = default)
         {
             return await _db.StoreItemRequests

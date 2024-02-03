@@ -67,6 +67,18 @@ namespace PTS_DATA.Repository.Implementations
           .ToListAsync(cancellationToken);
         }
 
+        public async Task<decimal> ThisYearSale(CancellationToken cancellationToken = default)
+        {
+            return await _db.Sales
+               .Where(x => x.IsDeleted == false && x.DateCreated.Value.Date.Year == DateTime.Now.Date.Year).SumAsync(x => x.TotalAmount);
+        }
+
+        public async Task<decimal> TodaySale(CancellationToken cancellationToken = default)
+        {
+            return await _db.Sales
+              .Where(x => x.IsDeleted == false && x.DateCreated.Value.Date == DateTime.Now.Date).SumAsync(x => x.TotalAmount);
+        }
+
         public async Task UpdateAsync(Sales entity)
         {
             await _db.SaveChangesAsync();

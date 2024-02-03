@@ -27,6 +27,7 @@ namespace PTS_CORE.Domain.DataTransferObject.RequestModel.HireVehicle
         public bool ResolvedByOperation { get; set; }
         public bool ResolvedByDepo { get; set; }
         public OperationType OperationType { get; set; }
+        public double Kilometer { get; set; }
 
         public bool IsDeleted { get; set; } 
         public DateTime? DeletedDate { get; set; }
@@ -38,5 +39,6 @@ namespace PTS_CORE.Domain.DataTransferObject.RequestModel.HireVehicle
         public string? ModifierName { get; set; }
         public string? ModifierId { get; set; }
         public DateTime? LastModified { get; set; }
+
     }
 }

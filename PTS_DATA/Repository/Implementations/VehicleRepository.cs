@@ -2,6 +2,7 @@
 using PTS_CORE.Domain.Entities;
 using PTS_DATA.EfCore.Context;
 using PTS_DATA.Repository.Interfaces;
+using System.Threading;
 
 namespace PTS_DATA.Repository.Implementations
 {
@@ -82,6 +83,13 @@ namespace PTS_DATA.Repository.Implementations
         public async Task UpdateAsync(Vehicle entity)
         {
             await _db.SaveChangesAsync();
+        }
+
+        public async Task<long> NumberOfVehicle()
+        {
+            var vehicle = await _db.vehicles
+              .Where(x => x.IsDeleted == false).ToListAsync();
+            return vehicle.Count();
         }
     }
 }

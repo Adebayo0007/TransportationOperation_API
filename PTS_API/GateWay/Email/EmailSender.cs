@@ -29,6 +29,7 @@ namespace PTS_API.GateWay.Email
             _emailSettings = emailSettings.Value;
         }
 
+
         public async Task<bool> SendEmail1(EmailRequestModel mail)
         {
             try
@@ -48,7 +49,7 @@ namespace PTS_API.GateWay.Email
                 using (var client = new SmtpClient())
                 {
                     client.Connect(_emailSettings.SmtpServer, _emailSettings.SmtpPort, SecureSocketOptions.StartTls);
-                    client.Authenticate(_emailSettings.SmtpUsername, _emailSettings.SmtpPassword);
+                    client.Authenticate("tijaniadebayoabdllahi@gmail.com", "Adebayo347!");
                     client.Send(message);
                     client.Disconnect(true);
 
@@ -83,83 +84,75 @@ namespace PTS_API.GateWay.Email
         {
             Configuration.Default.ApiKey.Clear();
             var apiKey = _configuration.GetValue<string>("SendinblueAPIkey:ApiKey");
-            Configuration.Default.ApiKey.Add("api-key", apiKey);
+            Configuration.Default.ApiKey["api-key"] = apiKey;
 
             var apiInstance = new TransactionalEmailsApi();
-            string SenderName = "Pacesetter Transportation Services";
+            string SenderName = "Pacesetter Transport Service";
             string SenderEmail = email.SenderEmail;
             SendSmtpEmailSender Email = new SendSmtpEmailSender(SenderName, SenderEmail);
-            SendSmtpEmailTo smtpEmailTo = new SendSmtpEmailTo(email.ReceiverEmail, email.ReceiverName);
-            List<SendSmtpEmailTo> To = new List<SendSmtpEmailTo>
-            {
-                smtpEmailTo
-            };
+            string ToEmail = email.ReceiverEmail;
+            string ToName = email.ReceiverName;
+
+            SendSmtpEmailTo smtpEmailTo = new SendSmtpEmailTo(ToEmail, ToName);
+            List<SendSmtpEmailTo> To = new List<SendSmtpEmailTo>();
+            To.Add(smtpEmailTo);
+
+        /*    //Bcc the reciever also have the copy of the message but name do not visisble to othe reciepient of the email
             string BccName = email.ReceiverName;
             string BccEmail = email.ReceiverEmail;
             SendSmtpEmailBcc BccData = new SendSmtpEmailBcc(BccEmail, BccName);
-            List<SendSmtpEmailBcc> Bcc = new List<SendSmtpEmailBcc>
-            {
-                BccData
-            };
-            string CcName = "Pacesetter Transportation Services";
-            string CcEmail = _emailSettings.SenderEmail;
+            List<SendSmtpEmailBcc> Bcc = new List<SendSmtpEmailBcc>();
+            Bcc.Add(BccData)*/;
+
+            //CC Sender also recieve the email
+           /* string CcName = "Wazobia agro Wxpress";
+            string CcEmail = email.SenderEmail;
             SendSmtpEmailCc CcData = new SendSmtpEmailCc(CcEmail, CcName);
-            List<SendSmtpEmailCc> Cc = new List<SendSmtpEmailCc>
-            {
-                CcData
-            };
-            string TextContent = null;
-            string ReplyToName = "Pacesetter Transportation Services";
-            string ReplyToEmail = _emailSettings.SenderEmail;
+            List<SendSmtpEmailCc> Cc = new List<SendSmtpEmailCc>();
+            Cc.Add(CcData);*/
+            string HtmlContent = email.Message;
+            string TextContent = HtmlContent;
+           // string Subject = "{{params.subject}}";
+           /* string ReplyToName = "Wazobia Agro Express";
+            string ReplyToEmail = email.SenderEmail;
             SendSmtpEmailReplyTo ReplyTo = new SendSmtpEmailReplyTo(ReplyToEmail, ReplyToName);
-            string stringInBase64 = "aGVsbG8gdGhpcyBpcyB0ZXN0";
             string AttachmentUrl = null;
-            string AttachmentName = "Pacesetter.txt";
+            string stringInBase64 = "aGVsbG8gdGhpcyBpcyB0ZXN0";
             byte[] Content = System.Convert.FromBase64String(stringInBase64);
+            string AttachmentName = "test.txt";
             SendSmtpEmailAttachment AttachmentContent = new SendSmtpEmailAttachment(AttachmentUrl, Content, AttachmentName);
-            List<SendSmtpEmailAttachment> Attachment = new List<SendSmtpEmailAttachment>
-            {
-                AttachmentContent
-            };
-            JObject Headers = new JObject
-            {
-                { "Some-Custom-Name", "unique-id-1234" }
-            };
+            List<SendSmtpEmailAttachment> Attachment = new List<SendSmtpEmailAttachment>();
+            Attachment.Add(AttachmentContent);
+            JObject Headers = new JObject();
+            Headers.Add("Some-Custom-Name", "unique-id-1234");
             long? TemplateId = null;
-            JObject Params = new JObject
-            {
-                { "parameter", "My param value" },
-                { "subject", "Dansnom" }
-            };
-            List<string> Tags = new List<string>
-            {
-                "mytag"
-            };
-            SendSmtpEmailTo1 smtpEmailTo1 = new SendSmtpEmailTo1(email.ReceiverEmail, email.ReceiverName);
-            List<SendSmtpEmailTo1> To1 = new List<SendSmtpEmailTo1>
-            {
-                smtpEmailTo1
-            };
-            Dictionary<string, object> _parmas = new Dictionary<string, object>
-            {
-                { "params", Params }
-            };
+            JObject Params = new JObject();
+
+            //this is subtituted by the params.parameter
+            Params.Add("parameter", email.Message);
+
+            //this is subtituted by the params.subbject
+            Params.Add("subject", email.Subject);
+            List<string> Tags = new List<string>();
+            Tags.Add("mytag");
+            SendSmtpEmailTo1 smtpEmailTo1 = new SendSmtpEmailTo1(ToEmail, ToName);
+            List<SendSmtpEmailTo1> To1 = new List<SendSmtpEmailTo1>();
+            To1.Add(smtpEmailTo1);
+            Dictionary<string, object> _parmas = new Dictionary<string, object>();
+            _parmas.Add("params", Params);
             SendSmtpEmailReplyTo1 ReplyTo1 = new SendSmtpEmailReplyTo1(ReplyToEmail, ReplyToName);
-            SendSmtpEmailMessageVersions messageVersion = new SendSmtpEmailMessageVersions(To1, _parmas, Bcc, Cc, ReplyTo1, email.Subject);
-            List<SendSmtpEmailMessageVersions> messageVersiopns = new List<SendSmtpEmailMessageVersions>
-            {
-                messageVersion
-            };
+            SendSmtpEmailMessageVersions messageVersion = new SendSmtpEmailMessageVersions(To1, _parmas, Bcc, Cc, ReplyTo1, Subject);
+            List<SendSmtpEmailMessageVersions> messageVersiopns = new List<SendSmtpEmailMessageVersions>();
+            messageVersiopns.Add(messageVersion);*/
             try
             {
-                var sendSmtpEmail = new SendSmtpEmail(Email, To, Bcc, Cc, email.Message, TextContent, email.Subject, ReplyTo, Attachment, Headers, TemplateId, Params, messageVersiopns, Tags);
+
+                var sendSmtpEmail = new SendSmtpEmail(Email, To, null, null, HtmlContent, TextContent, email.Subject);
                 CreateSmtpEmail result = apiInstance.SendTransacEmail(sendSmtpEmail);
-                Debug.WriteLine(result.ToJson());
                 return true;
             }
-            catch (System.Exception e)
+            catch (Exception ex)
             {
-                Debug.WriteLine(e.Message);
                 return false;
             }
 

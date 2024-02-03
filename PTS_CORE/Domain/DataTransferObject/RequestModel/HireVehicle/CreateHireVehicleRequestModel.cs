@@ -34,5 +34,7 @@ namespace PTS_CORE.Domain.DataTransferObject.RequestModel.HireVehicle
         public string DepartureTerminalName { get; set; }
         [Required]
         public OperationType OperationType { get; set; }
+        [Required]
+        public double Kilometer { get; set; }
     }
 }

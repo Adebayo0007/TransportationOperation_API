@@ -11,6 +11,7 @@ namespace PTS_DATA.Repository.Interfaces
     {
         Task<Terminal> GetModelByIdAsync(string id);
         Task<Terminal> GetModelByNameAsync(string name);
+        Task<long> NumberOfTerminals();
         Task<IEnumerable<Terminal>> InactiveTerminal(CancellationToken cancellationToken = default);
         Task<IEnumerable<Terminal>> SearchTerminal(string? keyword= null, CancellationToken cancellationToken = default);
     }

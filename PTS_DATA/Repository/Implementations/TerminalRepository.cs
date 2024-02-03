@@ -67,6 +67,11 @@ namespace PTS_DATA.Repository.Implementations
              .ToListAsync(cancellationToken);
         }
 
+        public async Task<long> NumberOfTerminals()
+        {
+            return await _db.Terminals.CountAsync();
+        }
+
         public async Task<IEnumerable<Terminal>> SearchTerminal(string? keyword = null, CancellationToken cancellationToken = default)
         {
             return await _db.Terminals

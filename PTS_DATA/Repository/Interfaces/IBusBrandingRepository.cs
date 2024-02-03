@@ -12,6 +12,8 @@ namespace PTS_DATA.Repository.Interfaces
         Task<BusBranding> GetModelByIdAsync(string id);
         Task<IEnumerable<BusBranding>> InactiveBranding(CancellationToken cancellationToken = default);
         Task<IEnumerable<BusBranding>> UnApprovedBranding(CancellationToken cancellationToken = default);
+        Task<long> NumberOfBrandedVehicle();
+        Task<IEnumerable<BusBranding>> MarkExpiredBrandAsDeleted();
         Task<IEnumerable<BusBranding>> SearchBranding(string? keyword, CancellationToken cancellationToken = default);
     }
 }

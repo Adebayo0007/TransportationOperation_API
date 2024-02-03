@@ -108,6 +108,7 @@ namespace PTS_BUSINESS.Services.Implementations
                     OperationType = model.OperationType != null && (int)model.OperationType > 0? model.OperationType : OperationType.Unknown,
                     Amount = model.Amount != null && model.Amount > 0? model.Amount : 0,
                     Profit = model.Profit != null && model.Profit > 0? model.Profit : 0,
+                    Kilometer = model.Kilometer != null && model.Kilometer > 0? model.Kilometer : 1,
                     CostOfExacution = model.CostOfExacution != null && model.CostOfExacution > 0? model.CostOfExacution : 0,
                     Fuel = model.Fuel != null && model.Fuel > 0? model.Fuel : 0,
                     CreatorId = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? null,
@@ -434,7 +435,8 @@ namespace PTS_BUSINESS.Services.Implementations
                 IsModified = model.IsModified,
                 ModifierName = model.ModifierName,
                 ModifierId = model.ModifierId,
-                LastModified = model.LastModified
+                LastModified = model.LastModified,
+                Kilometer = model.Kilometer
             };
         }
     }

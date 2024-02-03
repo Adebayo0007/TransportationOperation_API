@@ -19,6 +19,8 @@ namespace PTS_BUSINESS.Services.Interfaces
         Task<BaseResponse<IEnumerable<ApplicationUserDto>>> SearchUsers(string? keyword);
         Task<BaseResponse<IEnumerable<ApplicationRoleDto>>> GetAllRoles();
         Task<BaseResponse<IEnumerable<ApplicationUserDto>>> Drivers();
+        Task<double> NumberOfUser();
+        Task<Dashboard> Dashboard();
         Task<BaseResponse<IEnumerable<ApplicationUserDto>>> GetUserByEmail(string email);
         Task<BaseResponse<IEnumerable<ApplicationUserDto>>> GetUserById(string Id);  
     }

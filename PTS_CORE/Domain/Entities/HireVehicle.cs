@@ -14,6 +14,7 @@ namespace PTS_CORE.Domain.Entities
         public string DepartureAddress { get; set; }
         public string DestinationAddress { get; set; }
         public double Amount { get; set; }
+        public double Kilometer { get; set; }
         public string? VehicleId { get; set; }
         public double Profit { get; set; }
         public double CostOfExacution { get; set; }

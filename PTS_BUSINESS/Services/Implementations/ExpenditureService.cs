@@ -77,6 +77,7 @@ namespace PTS_BUSINESS.Services.Implementations
                 expenditure.UnitPrice = model.UnitPrice != null ? model.UnitPrice : null;
                 expenditure.IsProcurementApproved = model.UnitPrice != null && model.Purpose != null ? true : false;
                 expenditure.IsAuditorCommented = model.UnitPrice != null && model.Purpose != null ? true : false;
+                expenditure.IsChairmanApproved = model.UnitPrice != null && model.UnitPrice.Value < 1000000 ? true : false;
                 expenditure.IsDDPCommented = model.UnitPrice != null && model.Purpose != null ? true : false;
                 expenditure.ItemQuantity = model.ItemQuantity != null ? model.ItemQuantity.Value : 1;
                 expenditure.TerminalId = model.TerminalId != null ? model.TerminalId : null;
@@ -131,6 +132,31 @@ namespace PTS_BUSINESS.Services.Implementations
                 { throw; }
             }
             else return false;
+        }
+
+        public async Task<BaseResponse<IEnumerable<ExpenditureResponseModel>>> Expenditures(CancellationToken cancellationToken = default)
+        {
+            try
+            {
+
+                var expenditure = await _expenditureRepository.GetAllAsync(cancellationToken);
+                if (expenditure == null) return new BaseResponse<IEnumerable<ExpenditureResponseModel>>
+                {
+                    IsSuccess = false,
+                    Message = $"expenditures is not found"
+                };
+                else
+                    return new BaseResponse<IEnumerable<ExpenditureResponseModel>>
+                    {
+                        IsSuccess = true,
+                        Message = $"expenditures retrieved successfully",
+                        Data = expenditure.Select(x => ReturnExpenditureResponseModel(x)).ToList()
+                    };
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
 
         public async Task<BaseResponse<IEnumerable<ExpenditureResponseModel>>> Get(string id)

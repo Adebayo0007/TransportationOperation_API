@@ -11,6 +11,8 @@ namespace PTS_DATA.Repository.Interfaces
     {
         Task<Sales> GetModelByIdAsync(string id);
         Task<IEnumerable<Sales>> InactiveSaleRequest(CancellationToken cancellationToken = default);
+        Task<decimal> ThisYearSale(CancellationToken cancellationToken = default);
+        Task<decimal> TodaySale(CancellationToken cancellationToken = default);
         Task<IEnumerable<Sales>> SearchSale(string? keyword,CancellationToken cancellationToken = default);
     }
 }

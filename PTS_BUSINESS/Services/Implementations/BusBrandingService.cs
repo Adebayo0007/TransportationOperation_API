@@ -250,6 +250,16 @@ namespace PTS_BUSINESS.Services.Implementations
             }
         }
 
+        public async Task MarkExpiredBrandAsDeleted()
+        {
+            var models = await _busBrandingRepository.MarkExpiredBrandAsDeleted();
+            foreach (var model in models)
+            {
+                model.IsDeleted = true;
+            }
+            await _busBrandingRepository.UpdateAsync(new BusBranding());
+        }
+
         public async Task<BaseResponse<IEnumerable<BusBrandingResponseModel>>> SearchBusBranding(string? keyword, CancellationToken cancellationToken = default)
         {
             try

@@ -77,6 +77,25 @@ namespace PTS_API.Controllers
         }
 
         [HttpGet]
+        [Route("Expenditures")]
+        public async Task<IActionResult> Expenditures(CancellationToken cancellationToken)
+        {
+            try
+            {
+                var result = await _expenditureService.Expenditures(cancellationToken);
+                if (result.IsSuccess == true)
+                {
+                    return Ok(result);
+                }
+                return BadRequest(new { Message = "internal error, please try again later..." });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet]
         [Route("DeactivatedExpenditure")]
         public async Task<IActionResult> DeactivatedExpenditure(CancellationToken cancellationToken = default)
         {

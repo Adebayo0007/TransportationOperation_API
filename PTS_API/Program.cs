@@ -2,8 +2,10 @@ using Hangfire;
 using Hangfire.SqlServer;
 using MailKit.Security;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -17,7 +19,7 @@ using PTS_CORE.Domain.Entities;
 using PTS_DATA.EfCore.Context;
 using PTS_DATA.Repository.Implementations;
 using PTS_DATA.Repository.Interfaces;
-using sib_api_v3_sdk.Client;
+
 using System.Net.Mail;
 using System.Runtime.ConstrainedExecution;
 using System.Text;
@@ -73,6 +75,9 @@ namespace PTS_API
 
             builder.Services.AddDbContext<ApplicationDBContext>(options =>
                options.UseSqlServer(builder.Configuration.GetConnectionString("Database")));
+            builder.Services.AddFluentEmail("tijaniadebayoabdllahi@gmail.com")
+                .AddRazorRenderer()
+                .AddSmtpSender("smtp-relay.brevo.com", 587);
 
             #region Identity
 
@@ -276,23 +281,28 @@ namespace PTS_API
             /////////////////////////////////////////////////////////////////////////////
 
             // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
-            {
-                app.UseSwagger();
-                app.UseSwaggerUI();
-            }
+               if (app.Environment.IsDevelopment())
+               {
+                   app.UseSwagger();
+                   app.UseSwaggerUI();
+               }
 
-            app.UseHangfireDashboard();
-            app.UseHangfireServer();
-            app.UseRouting();
-            app.UseHttpsRedirection();
-            app.UseCors("CorsPolicy");
-            app.UseStaticFiles();
-            app.UseAuthentication();
-            app.UseAuthorization();
-            app.MapControllers();
 
-            app.Run();
+               app.UseHangfireDashboard();
+               app.UseHangfireServer();
+
+               app.UseRouting();
+               app.UseHttpsRedirection();
+               app.UseCors("CorsPolicy");
+               app.UseStaticFiles();
+               app.UseAuthentication();
+               app.UseAuthorization();
+               app.MapControllers();
+
+               app.Run();
+
+
+
         }
     }
 }

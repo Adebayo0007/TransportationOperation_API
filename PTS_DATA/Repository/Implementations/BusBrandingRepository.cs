@@ -2,6 +2,7 @@
 using PTS_CORE.Domain.Entities;
 using PTS_DATA.EfCore.Context;
 using PTS_DATA.Repository.Interfaces;
+using System.Threading;
 
 namespace PTS_DATA.Repository.Implementations
 {
@@ -54,6 +55,19 @@ namespace PTS_DATA.Repository.Implementations
              .Where(x => x.IsDeleted == true)
              .OrderByDescending(x => x.DeletedDate)
              .ToListAsync(cancellationToken);
+        }
+
+        public async Task<IEnumerable<BusBranding>> MarkExpiredBrandAsDeleted()
+        {
+            return await _db.BusBrandings.Where(x => DateTime.Now.Date > x.BrandEndDate.Date).ToListAsync();
+        }
+
+        public async Task<long> NumberOfBrandedVehicle()
+        {
+            return await _db.BusBrandings
+            .Where(x => x.IsDeleted == false && x.BrandEndDate.Date > DateTime.Now.Date)
+            .SumAsync(x => x.NumberOfVehicle);
+
         }
 
         public async Task<IEnumerable<BusBranding>> SearchBranding(string? keyword, CancellationToken cancellationToken = default)

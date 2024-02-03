@@ -14,6 +14,7 @@ namespace PTS_BUSINESS.Services.Interfaces
         Task<bool> Create(CreateExpenditureRequestModel model);
         Task<BaseResponse<IEnumerable<ExpenditureResponseModel>>> Get(string id);
         Task<BaseResponse<IEnumerable<ExpenditureResponseModel>>> GetAllExpenditures(CancellationToken cancellationToken = default);
+        Task<BaseResponse<IEnumerable<ExpenditureResponseModel>>> Expenditures(CancellationToken cancellationToken = default);
         Task<BaseResponse<IEnumerable<ExpenditureResponseModel>>> GetInactiveExpenditures(CancellationToken cancellationToken = default);
         Task<BaseResponse<IEnumerable<ExpenditureResponseModel>>> ResolvedRequest(CancellationToken cancellationToken = default);
         Task<BaseResponse<IEnumerable<ExpenditureResponseModel>>> SearchExpenditures(string? keyword, CancellationToken cancellationToken = default);

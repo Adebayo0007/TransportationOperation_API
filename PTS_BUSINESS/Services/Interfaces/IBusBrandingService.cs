@@ -20,6 +20,7 @@ namespace PTS_BUSINESS.Services.Interfaces
         Task<bool> UpdateBusBranding(UpdateBusBrandingRequestModel updateModel);
         Task<bool> ActivateBusBranding(string id);
         Task<bool> Approve(string id);
+        Task MarkExpiredBrandAsDeleted();
         Task<bool> Delete(string id);
     }
 }

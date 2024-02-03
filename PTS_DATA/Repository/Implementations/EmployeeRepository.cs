@@ -38,9 +38,10 @@ namespace PTS_DATA.Repository.Implementations
             DateTime threeDaysAhead = currentDate.AddDays(3);
             var result = await _db.Employees
                .Include(x => x.ApplicationUser)
-               .Where(x => x.ApplicationUser.DateOfBirth.Value.Date.Month == currentDate.Month &&
+               /*.Where(x => x.ApplicationUser.DateOfBirth.Value.Date.Month == currentDate.Month &&
                x.ApplicationUser.DateOfBirth.Value.Date.Day >= currentDate.Day &&
-               x.ApplicationUser.DateOfBirth.Value.Date.Day <= threeDaysAhead.Day)
+               x.ApplicationUser.DateOfBirth.Value.Date.Day <= threeDaysAhead.Day)*/
+               .Where(x => x.ApplicationUser.DateOfBirth.Value.Date.Month == currentDate.Month)
                .OrderBy(x => x.ApplicationUser.DateOfBirth.Value.Date)
                .ToListAsync(cancellationToken);
             return result;
@@ -89,6 +90,7 @@ namespace PTS_DATA.Repository.Implementations
                .ToListAsync(cancellationToken);
         }
 
+
         public async Task<IEnumerable<Employee>> SearchEmployees(string? keyword, CancellationToken cancellationToken = default)
         {
             return await _db.Employees
@@ -103,6 +105,11 @@ namespace PTS_DATA.Repository.Implementations
         public async Task UpdateAsync(Employee entity)
         {
             await _db.SaveChangesAsync();
+        }
+
+        public async Task<long> NumberOfEmployee()
+        {
+            return await _db.Employees.CountAsync();
         }
     }
 }

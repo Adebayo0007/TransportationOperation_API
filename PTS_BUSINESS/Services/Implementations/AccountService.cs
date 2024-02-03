@@ -8,6 +8,7 @@ using PTS_CORE.Domain.DataTransferObject.Email;
 using PTS_CORE.Domain.DataTransferObject.RequestModel.Account;
 using PTS_CORE.Domain.Entities;
 using PTS_CORE.Utils;
+using PTS_DATA.Repository.Interfaces;
 using System.Security.Claims;
 
 namespace PTS_BUSINESS.Services.Implementations
@@ -17,18 +18,42 @@ namespace PTS_BUSINESS.Services.Implementations
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<ApplicationRole> _roleManager;
+        private readonly ISaleRepository _saleRepository;
+        private readonly IExpenditureRepository _expenditureRepository;
+        private readonly IBudgetTrackingRepository _budgetTrackingRepository;
+        private readonly IVehicleRepository _vehicleRepository;
+        private readonly IBusBrandingRepository _busBrandingRepository;
+        private readonly IEmployeeRepository _employeeRepository;
+        private readonly ITerminalRepository _terminalRepository;
+        private readonly IStoreItemRequestRepository _storeItemRequestRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public AccountService(
             SignInManager<ApplicationUser> signInManager,
             UserManager<ApplicationUser> userManager,
             RoleManager<ApplicationRole> roleManager,
-            IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            IExpenditureRepository expenditureRepository,
+            ISaleRepository saleRepository,
+            IBudgetTrackingRepository budgetTrackingRepository,
+            IVehicleRepository vehicleRepository,
+            IBusBrandingRepository busBrandingRepository,
+            IEmployeeRepository employeeRepository,
+            ITerminalRepository terminalRepository,
+            IStoreItemRequestRepository storeItemRequestRepository)
         {
             _signInManager = signInManager;
             _userManager = userManager;
             _roleManager = roleManager;
             _httpContextAccessor = httpContextAccessor;
+            _expenditureRepository = expenditureRepository;
+            _saleRepository = saleRepository;
+            _budgetTrackingRepository = budgetTrackingRepository;
+            _vehicleRepository = vehicleRepository;
+            _busBrandingRepository = busBrandingRepository;
+            _employeeRepository = employeeRepository;
+            _terminalRepository = terminalRepository;
+            _storeItemRequestRepository = storeItemRequestRepository;
         }
 
         public async Task<bool> DeleteUserAccount(string userId)
@@ -555,6 +580,58 @@ namespace PTS_BUSINESS.Services.Implementations
                 return true;
             }
             return false;
+        }
+        public async Task<double> NumberOfUser()
+        {
+            return await _userManager.Users.CountAsync();
+        }
+        public async Task<Dashboard> Dashboard()
+        {
+            var mail = _httpContextAccessor.HttpContext.User.FindFirst(ClaimValueTypes.Email).Value;
+            var sales = await _saleRepository.ThisYearSale();
+            var expenditure = await _expenditureRepository.ThisYearExpenditure();
+            var budget = await _budgetTrackingRepository.ThisYearBudgetTrackings();
+            var todaySale = await _saleRepository.TodaySale();
+            var todayExpenditure = await _expenditureRepository.TodayExpenditure();
+            var vehicles = await _vehicleRepository.NumberOfVehicle();
+            var brandedbuses = await _busBrandingRepository.NumberOfBrandedVehicle();
+            var user = await _userManager.Users.CountAsync();
+           var employee = await _employeeRepository.NumberOfEmployee();
+            var terminal = await _terminalRepository.NumberOfTerminals();
+            var storeItemRequestForAuditor = await _storeItemRequestRepository.NumberOfRequestForAuditor();
+            var storeItemRequestFordDDP = await _storeItemRequestRepository.NumberOfRequestForDDP();
+            var storeItemRequestFordChairman = await _storeItemRequestRepository.NumberOfRequestForChairman();
+            var storeItemRequestFordStore = await _storeItemRequestRepository.NumberOfRequestForStore();
+            var financialRequestForAuditor = await _expenditureRepository.NumberOfFinancialrequestForAuditor();
+            var financialRequestForProcumentOfficer = await _expenditureRepository.NumberOfFinancialrequestForProcurementOfficer();
+            var financialRequestForDDP = await _expenditureRepository.NumberOfFinancialrequestForDDP();
+            var financialRequestForChairman = await _expenditureRepository.NumberOfFinancialrequestForChairman();
+            var financialRequestForFinance = await _expenditureRepository.NumberOfFinancialrequestForFinance();
+            var myStoreItemRequest = await _storeItemRequestRepository.NumberOfMyrequest(mail);
+            var myFinancialRequest = await _expenditureRepository.NumberOfMyRequest(mail);
+            return new Dashboard { 
+                Expenditure = expenditure, 
+                Sales = sales,Budget = budget, 
+                TodayExpenditure = todayExpenditure,
+                TodaySales = todaySale,
+                Vehicles = vehicles,
+                BrandedBuses = brandedbuses,
+                User = user,
+                Employee = employee,
+                Terminals = terminal,
+                StoreItemRequestForAuditor = storeItemRequestForAuditor,
+                StoreItemRequestForDDP = storeItemRequestFordDDP,
+                StoreItemRequestForChairman = storeItemRequestFordChairman,
+                StoreItemRequestForStore = storeItemRequestFordStore,
+                FinancialRequestForAuditor = financialRequestForAuditor,
+                FinancialRequestForProcumentOfficer = financialRequestForProcumentOfficer,
+                FinancialRequestForDDP = financialRequestForDDP,
+                FinancialRequestForChairman = financialRequestForChairman,
+                FinancialRequestForFinance = financialRequestForFinance,
+                MyStoreItem = myStoreItemRequest,
+                MyExpenditure = myFinancialRequest
+
+             };
         }
 
         /// <summary>

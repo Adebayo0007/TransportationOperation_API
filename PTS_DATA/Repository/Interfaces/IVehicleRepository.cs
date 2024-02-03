@@ -12,6 +12,7 @@ namespace PTS_DATA.Repository.Interfaces
         Task<Vehicle> GetModelByIdAsync(string id);
         Task<IEnumerable<Vehicle>> GetTerminalVehicles(string terminalId,CancellationToken cancellationToken = default);
         Task<IEnumerable<Vehicle>> InactiveVehicle(CancellationToken cancellationToken = default);
+        Task<long> NumberOfVehicle();
         Task<IEnumerable<Vehicle>> SearchVehicle(string keyword, CancellationToken cancellationToken = default);
     }
 }
