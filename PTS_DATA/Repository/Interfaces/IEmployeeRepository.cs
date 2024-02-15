@@ -10,10 +10,12 @@ namespace PTS_DATA.Repository.Interfaces
     public interface IEmployeeRepository : IBaseRepository<Employee>
     {
         Task<Employee> GetModelByIdAsync(string id);
+        Task<Employee> GetModelByUserIdAsync(string id);
         Task<IEnumerable<Employee>> GetByEmailAsync(string email);
         Task<IEnumerable<Employee>> InactiveEmployees(CancellationToken cancellationToken = default);
         Task<long> NumberOfEmployee();
         Task<IEnumerable<Employee>> EmployeeBirthdayNotification(CancellationToken cancellationToken = default);
+        Task<IEnumerable<Employee>> EmployeeBirthdayForToday(CancellationToken cancellationToken = default);
         Task<IEnumerable<Employee>> SearchEmployees(string? keyword, CancellationToken cancellationToken = default);
     }
 }

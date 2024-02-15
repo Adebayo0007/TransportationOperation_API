@@ -17,6 +17,7 @@ namespace PTS_BUSINESS.Services.Interfaces
         Task<BaseResponse<IEnumerable<EmployeeResponseModel>>> GetByEmail(string email);
         Task<BaseResponse<IEnumerable<EmployeeResponseModel>>> GetAllEmployees(CancellationToken cancellationToken = default);
         Task<BaseResponse<IEnumerable<EmployeeResponseModel>>> EmployeeBirthdayNotification(CancellationToken cancellationToken = default);
+        Task EmployeeBirthdayForToday();
         Task<BaseResponse<IEnumerable<EmployeeResponseModel>>> GetInactiveEmployees(CancellationToken cancellationToken = default);
         Task<BaseResponse<IEnumerable<EmployeeResponseModel>>> SearchEmployee(string? keyword,CancellationToken cancellationToken = default);
         Task<bool> UpdateEmployeeAccount(UpdateEmployeeRequestModel updateModel);

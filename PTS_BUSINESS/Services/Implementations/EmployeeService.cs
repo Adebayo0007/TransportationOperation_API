@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using PTS_BUSINESS.Email;
+using PTS_BUSINESS.Helper;
 using PTS_BUSINESS.Services.Interfaces;
 using PTS_CORE.Domain.DataTransferObject;
+using PTS_CORE.Domain.DataTransferObject.Email;
 using PTS_CORE.Domain.DataTransferObject.RequestModel.Employee;
 using PTS_CORE.Domain.Entities;
 using PTS_DATA.Repository.Interfaces;
@@ -12,26 +15,34 @@ namespace PTS_BUSINESS.Services.Implementations
     public class EmployeeService : IEmployeeService
     {
         private readonly IEmployeeRepository _employeeRepository;
+        private readonly IDepartmentRepository _departmentRepository;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<ApplicationRole> _roleManager;
+        private readonly IEmailSender1 _emailSender;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public EmployeeService(IEmployeeRepository employeeRepository, 
             UserManager<ApplicationUser> userManager, 
             RoleManager<ApplicationRole> roleManager,
-             IHttpContextAccessor httpContextAccessor)
+             IHttpContextAccessor httpContextAccessor,
+             IDepartmentRepository departmentRepository,
+             IEmailSender1 emailSender)
         {
             _employeeRepository = employeeRepository;
             _userManager = userManager;
             _roleManager = roleManager;
+            _departmentRepository = departmentRepository;
             _httpContextAccessor = httpContextAccessor;
+            _emailSender = emailSender;
         }
         public async Task<bool> Create(CreateEmployeeRequestModel model)
         {
             if (model != null)
             {
+
                 if (await _userManager.FindByEmailAsync(model.Email.Trim()) != null) return false;
                 var role = await _roleManager.FindByNameAsync(model.RoleName.Trim());
+                var department = await _departmentRepository.GetModelByIdAsync(model.DepartmentId);
                 var user = new ApplicationUser
                 {
                     UserName = model.Email.Trim(),
@@ -60,6 +71,8 @@ namespace PTS_BUSINESS.Services.Implementations
                     {
                         ApplicatioUserId = user.Id,
                         ApplicationUser = user,
+                        DepartmentId = department.Id,
+                        DepartmentName = department.Name,
                         StaffIdentityCardNumber = model.StaffIdentityCardNumber.Trim() ?? string.Empty,
                         TerminalId = model.TerminalId.Trim() ?? string.Empty,
                         CreatorId = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? null,
@@ -214,6 +227,8 @@ namespace PTS_BUSINESS.Services.Implementations
         {
             if (updateModel != null)
             {
+               
+
                 try
                 {
                     var employee = await _employeeRepository.GetModelByIdAsync(updateModel.EmployeeId.Trim());
@@ -222,6 +237,9 @@ namespace PTS_BUSINESS.Services.Implementations
                     {
                        role = await _roleManager.FindByNameAsync(updateModel.RoleName.Trim());
                     }
+                    Department department = null;
+                    if (updateModel.DepartmentId != null)
+                        department = await _departmentRepository.GetModelByIdAsync(updateModel.DepartmentId);
 
                     if (employee == null)
                         return false;
@@ -235,6 +253,8 @@ namespace PTS_BUSINESS.Services.Implementations
                     employee.ApplicationUser.ApplicationRoleId = role != null ? role.Id : employee.ApplicationUser.ApplicationRoleId;
                     employee.ApplicationUser.PhoneNumber = !string.IsNullOrWhiteSpace(updateModel.Phonenumber.Trim()) ? updateModel.Phonenumber.Trim() : employee.ApplicationUser.PhoneNumber;
                     employee.TerminalId = updateModel.TerminalId != null ? updateModel.TerminalId.Trim() : employee.TerminalId;
+                    employee.DepartmentId = department != null? department.Id: employee.DepartmentId;
+                    employee.DepartmentName = department != null? department.Name: employee.DepartmentName;
                     employee.StaffIdentityCardNumber = !string.IsNullOrWhiteSpace(updateModel.StaffIdentityCardNumber.Trim()) ? updateModel.StaffIdentityCardNumber.Trim() : employee.StaffIdentityCardNumber;
                     employee.ApplicationUser.IsModified = true;
                     employee.ApplicationUser.LastModified = DateTime.Now;
@@ -314,6 +334,45 @@ namespace PTS_BUSINESS.Services.Implementations
                 };
             }
         }
+        public async Task EmployeeBirthdayForToday()
+        {
+            DateTime currentTime = DateTime.Now;
+            // Define the start and end times of the desired time range (12:00 AM to 12:05 AM)
+            DateTime startTime = DateTime.Today.AddHours(0).AddMinutes(0); // 12:00 AM
+            DateTime endTime = DateTime.Today.AddHours(0).AddMinutes(5); // 12:05 AM
+            // Check if the current time falls within the desired time range
+            bool isWithinTimeRange = currentTime >= startTime && currentTime <= endTime;
+
+            if (isWithinTimeRange)
+            {
+                try
+                {
+                    var employees = await _employeeRepository.EmployeeBirthdayForToday();
+                    foreach (var item in employees)
+                    {
+
+                        var mailModel = new EmailRequestModel
+                        {
+                            SenderEmail = "tijaniadebayoabdullahi@gmail.com",
+                            ReceiverEmail = item.ApplicationUser.Email,
+                            ReceiverName = $"{item.ApplicationUser.FirstName} {item.ApplicationUser.LastName}",
+                            Subject = "Birthday Wishes",
+                            Message = FileReader.ReadFileForBirthday($"{item.ApplicationUser.FirstName} {item.ApplicationUser.LastName}")
+                        };
+                        await _emailSender.SendEmail(mailModel);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw;
+                }
+            }
+            else
+            {
+                return;
+            }
+           
+        }
 
         public async Task<BaseResponse<IEnumerable<EmployeeResponseModel>>> SearchEmployee(string? keyword, CancellationToken cancellationToken = default)
         {
@@ -382,7 +441,9 @@ namespace PTS_BUSINESS.Services.Implementations
                 ModifierId = model.ModifierId,
                 LastModified = model.LastModified,
                 TerminalId = model.TerminalId,
-                AppointmentDate = model.AppointmentDate
+                AppointmentDate = model.AppointmentDate,
+                DepartmentId = model.DepartmentId,
+                DepartmentName = model.DepartmentName
 
             };
         }

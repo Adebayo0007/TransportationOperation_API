@@ -65,7 +65,7 @@ namespace PTS_DATA.Repository.Implementations
         public async Task<long> NumberOfBrandedVehicle()
         {
             return await _db.BusBrandings
-            .Where(x => x.IsDeleted == false && x.BrandEndDate.Date > DateTime.Now.Date)
+            .Where(x => x.IsDeleted == false)
             .SumAsync(x => x.NumberOfVehicle);
 
         }

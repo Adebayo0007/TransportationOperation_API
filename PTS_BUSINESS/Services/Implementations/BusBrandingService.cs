@@ -21,13 +21,19 @@ namespace PTS_BUSINESS.Services.Implementations
         private readonly IBusBrandingRepository _busBrandingRepository;
         private readonly ISaleRepository _saleRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IEmployeeRepository _employeeRepository;
+        private readonly IDepartmentalSaleRepository _departmentalSaleRepository;
         public BusBrandingService(IBusBrandingRepository busBrandingRepository,
-             IHttpContextAccessor httpContextAccessor, ISaleRepository saleRepository)
+             IHttpContextAccessor httpContextAccessor, ISaleRepository saleRepository,
+              IEmployeeRepository employeeRepository,
+             IDepartmentalSaleRepository departmentalSaleRepository)
         {
             _busBrandingRepository = busBrandingRepository;
             _httpContextAccessor = httpContextAccessor;
             _busBrandingRepository = busBrandingRepository;
             _saleRepository = saleRepository;
+            _employeeRepository = employeeRepository;
+            _departmentalSaleRepository = departmentalSaleRepository;
         }
         public async Task<bool> ActivateBusBranding(string id)
         {
@@ -62,9 +68,12 @@ namespace PTS_BUSINESS.Services.Implementations
                 try
                 {
                     var busBranding = await _busBrandingRepository.GetModelByIdAsync(id.Trim());
+                    var employee = await _employeeRepository.GetModelByUserIdAsync(busBranding.CreatorId);
+                    var departmentalSale = await _departmentalSaleRepository.GetModelByDepartmentIdAsync(employee.DepartmentId);
 
                     if (busBranding == null)
                         return false;
+                    if (departmentalSale != null) departmentalSale.ActualAmount += Convert.ToDecimal(busBranding.Amount);
                     busBranding.IsApprove = true;
                     busBranding.IsModified = true;
                     busBranding.LastModified = DateTime.Now;

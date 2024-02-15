@@ -19,6 +19,7 @@ namespace PTS_CORE.Domain.DataTransferObject.RequestModel.Employee
         public string? ModifierId { get; set; }
         public string? Phonenumber { get; set; }
         public string? TerminalId { get; set; }
+        public string? DepartmentId { get; set; }
         public string? StaffIdentityCardNumber { get; set; }
     }
 }

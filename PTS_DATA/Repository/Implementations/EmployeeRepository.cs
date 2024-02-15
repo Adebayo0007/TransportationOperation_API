@@ -111,5 +111,22 @@ namespace PTS_DATA.Repository.Implementations
         {
             return await _db.Employees.CountAsync();
         }
+
+        public async Task<Employee> GetModelByUserIdAsync(string id)
+        {
+            return await _db.Employees.Include(x => x.ApplicationUser)
+               .SingleOrDefaultAsync(x => x.ApplicatioUserId.ToLower() == id.ToLower());
+        }
+
+        public async Task<IEnumerable<Employee>> EmployeeBirthdayForToday(CancellationToken cancellationToken = default)
+        {
+             var result = await _db.Employees
+               .Include(x => x.ApplicationUser)
+               .Where(x => x.ApplicationUser.DateOfBirth.Value.Date.Month == DateTime.Now.Month &&
+               x.ApplicationUser.DateOfBirth.Value.Date.Day == DateTime.Now.Day)
+               .OrderBy(x => x.ApplicationUser.DateOfBirth.Value.Date)
+               .ToListAsync(cancellationToken);
+            return result;
+        }
     }
 }

@@ -19,11 +19,11 @@ namespace PTS_DATA.Repository.Implementations
         }
         public async Task<bool> CreateAsync(StoreItem entity)
         {
-            if (entity == null) throw new ArgumentNullException();
-            var response = await _db.StoreItems.AddAsync(entity);
-            if (response.Entity == null) return false;
-            await _db.SaveChangesAsync();
-            return true;
+                if (entity == null) throw new ArgumentNullException();
+                var response = await _db.StoreItems.AddAsync(entity);
+                if (response.Entity == null) return false;
+                await _db.SaveChangesAsync();
+                return true;
         }
 
         public async Task DeleteAsync()

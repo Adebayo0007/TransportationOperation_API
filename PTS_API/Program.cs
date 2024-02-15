@@ -1,11 +1,9 @@
 using Hangfire;
 using Hangfire.SqlServer;
-using MailKit.Security;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -13,15 +11,14 @@ using MimeKit;
 using PTS_API.Authentication;
 using PTS_API.GateWay.Email;
 using PTS_API.Utils;
+using PTS_BUSINESS.Email;
 using PTS_BUSINESS.Services.Implementations;
 using PTS_BUSINESS.Services.Interfaces;
 using PTS_CORE.Domain.Entities;
 using PTS_DATA.EfCore.Context;
 using PTS_DATA.Repository.Implementations;
 using PTS_DATA.Repository.Interfaces;
-
 using System.Net.Mail;
-using System.Runtime.ConstrainedExecution;
 using System.Text;
 
 namespace PTS_API
@@ -37,9 +34,9 @@ namespace PTS_API
 
             builder.Services.AddCors(a => a.AddPolicy("CorsPolicy", b =>
             {
-                //b.WithOrigins("http://localhost:5000/")
-                b.AllowAnyMethod()
-                .AllowAnyOrigin()
+                b.WithOrigins("https://localhost:7065/")
+                .AllowAnyMethod()
+               // .AllowAnyOrigin()
                 .AllowAnyHeader();
 
             }));
@@ -64,17 +61,12 @@ namespace PTS_API
                     DisableGlobalLocks = true
                 }));
 
-            //services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
-            // {
-            //     builder.AllowAnyOrigin()
-            //     .AllowAnyMethod()
-            //     .AllowAnyMethod();
-            // }));
-
+           
             builder.Services.AddHangfireServer();
 
             builder.Services.AddDbContext<ApplicationDBContext>(options =>
                options.UseSqlServer(builder.Configuration.GetConnectionString("Database")));
+
             builder.Services.AddFluentEmail("tijaniadebayoabdllahi@gmail.com")
                 .AddRazorRenderer()
                 .AddSmtpSender("smtp-relay.brevo.com", 587);
@@ -134,7 +126,7 @@ namespace PTS_API
             #endregion
 
             #region Dependencies
-
+            builder.Services.AddCors();
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddScoped<DBInitializer>();  //Seeding datas in to the DB
             builder.Services.AddScoped<IAccountService, AccountService>();
@@ -184,7 +176,17 @@ namespace PTS_API
             builder.Services.AddScoped<ISaleRepository, SaleRepository>();
             builder.Services.AddScoped<ISaleService, SaleService>();
 
+            builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
+            builder.Services.AddScoped<IDepartmentService, DepartmentService>();
+
+            builder.Services.AddScoped<IDepartmentalSaleRepository, DepartmentalSaleRepository>();
+            builder.Services.AddScoped<IDepartmentalSaleService, DepartmentalSaleService>();
+
+            builder.Services.AddScoped<IDepartmentalExpenditureBudgetRepository, DepartmentalExpenditureBudgetRepository>();
+            builder.Services.AddScoped<IDepartmentalExpenditureBudgetService, DepartmentalExpenditureBudgetService>();
+
             builder.Services.AddScoped<IEmailSender, EmailSender>();
+            builder.Services.AddScoped<IEmailSender1, EmailSender1>();
          
 
 
@@ -231,9 +233,11 @@ namespace PTS_API
                      opt.SerializerSettings.ContractResolver = new DefaultContractResolver();
                      opt.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
                  });*/
+            
 
 
-           builder.Services.AddAuthentication(x =>
+
+            builder.Services.AddAuthentication(x =>
             {
                 x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -281,15 +285,49 @@ namespace PTS_API
             /////////////////////////////////////////////////////////////////////////////
 
             // Configure the HTTP request pipeline.
-               if (app.Environment.IsDevelopment())
-               {
+               //if (app.Environment.IsDevelopment())
+               //{
                    app.UseSwagger();
                    app.UseSwaggerUI();
-               }
+              // }
+            #region Security
 
+                app.Use(async (context, next) =>
+                {
+                    context.Response.Headers.Add("Content-Security-Policy", "default-src 'self'");
+                    await next();
+                });
+                app.Use(async (context, next) =>
+                {
+                    context.Response.Headers.Add("X-Frame-Options", "DENY");
+                    await next();
+                });
+                app.Use(async (context, next) =>
+                {
+                    context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
+                    await next();
+                });
+                app.UseForwardedHeaders(new ForwardedHeadersOptions
+                {
+                    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+                });
+                app.UseCors(b =>
+                {
+                    b.WithOrigins("https://localhost:7065/")
+                    .AllowAnyMethod()
+                    // .AllowAnyOrigin()
+                    .AllowAnyHeader();
 
-               app.UseHangfireDashboard();
+                });
+            #endregion
+
+            app.UseHangfireDashboard();
                app.UseHangfireServer();
+
+               RecurringJob.AddOrUpdate<IBusBrandingService>
+                ("MarkExpiredBrandAsDeletedJob", x => x.MarkExpiredBrandAsDeleted(), "*/5 * * * *"); // Run every 5 minutes
+               RecurringJob.AddOrUpdate<IEmployeeService>
+                ("SendBirthdayMailForEmployee", x => x.EmployeeBirthdayForToday(), "*/2 * * * *"); //Runs every 2 minutes
 
                app.UseRouting();
                app.UseHttpsRedirection();

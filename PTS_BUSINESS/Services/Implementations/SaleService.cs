@@ -19,11 +19,17 @@ namespace PTS_BUSINESS.Services.Implementations
     {
         private readonly ISaleRepository _saleRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IEmployeeRepository _employeeRepository;
+        private readonly IDepartmentalSaleRepository _departmentalSaleRepository;
         public SaleService(ISaleRepository saleRepository,
-             IHttpContextAccessor httpContextAccessor)
+             IHttpContextAccessor httpContextAccessor,
+             IEmployeeRepository employeeRepository,
+             IDepartmentalSaleRepository departmentalSaleRepository)
         {
             _saleRepository = saleRepository;
             _httpContextAccessor = httpContextAccessor;
+            _employeeRepository = employeeRepository;
+            _departmentalSaleRepository = departmentalSaleRepository;
         }
         public async Task<bool> ActivateSale(string id)
         {
@@ -55,6 +61,11 @@ namespace PTS_BUSINESS.Services.Implementations
         {
             if (model != null)
             {
+                var userId = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                var employee = await _employeeRepository.GetModelByUserIdAsync(userId);
+                var departmentalSale = await _departmentalSaleRepository.GetModelByDepartmentIdAsync(employee.DepartmentId);
+                if (departmentalSale != null) departmentalSale.ActualAmount += Convert.ToDecimal(model.Quantity * model.UnitPrice);
+                await _departmentalSaleRepository.UpdateAsync(departmentalSale);
                 var sale = new Sales
                 {
                     Quantity = model.Quantity > 0? model.Quantity: 1,

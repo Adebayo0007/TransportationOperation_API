@@ -22,13 +22,19 @@ namespace PTS_BUSINESS.Services.Implementations
         private readonly IHireVehicleRepository _hireVehicleRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ISaleRepository _saleRepository;
+        private readonly IEmployeeRepository _employeeRepository;
+        private readonly IDepartmentalSaleRepository _departmentalSaleRepository;
         public HireVehicleService(IHireVehicleRepository hireVehicleRepository,
              IHttpContextAccessor httpContextAccessor,
-             ISaleRepository saleRepository)
+             ISaleRepository saleRepository,
+             IEmployeeRepository employeeRepository,
+             IDepartmentalSaleRepository departmentalSaleRepository)
         {
             _hireVehicleRepository = hireVehicleRepository;
             _httpContextAccessor = httpContextAccessor;
             _saleRepository = saleRepository;
+            _employeeRepository = employeeRepository;
+            _departmentalSaleRepository = departmentalSaleRepository;
         }
         public async  Task<bool> ActivateHireVehicle(string id)
         {
@@ -63,9 +69,12 @@ namespace PTS_BUSINESS.Services.Implementations
                 try
                 {
                     var hiredVehicle = await _hireVehicleRepository.GetModelByIdAsync(id.Trim());
+                    var employee = await _employeeRepository.GetModelByUserIdAsync(hiredVehicle.CreatorId);
+                    var departmentalSale = await _departmentalSaleRepository.GetModelByDepartmentIdAsync(employee.DepartmentId);
 
                     if (hiredVehicle == null)
                         return false;
+                    if (departmentalSale != null) departmentalSale.ActualAmount += Convert.ToDecimal(hiredVehicle.Amount);
                     hiredVehicle.IsChairmanApprove = true;
                     hiredVehicle.IsModified = true;
                     hiredVehicle.LastModified = DateTime.Now;

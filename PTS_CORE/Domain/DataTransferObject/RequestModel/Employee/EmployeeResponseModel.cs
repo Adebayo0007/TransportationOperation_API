@@ -29,6 +29,8 @@ namespace PTS_CORE.Domain.DataTransferObject.RequestModel.Employee
         public string? ModifierName { get; set; }
         public string? ModifierId { get; set; }
         public string? TerminalId { get; set; }
+        public string? DepartmentId { get; set; }
+        public string DepartmentName { get; set; }
         public DateTime? LastModified { get; set; }
         public DateTime? DateOfBirth { get; set; }
         public DateTime? AppointmentDate { get; set; }

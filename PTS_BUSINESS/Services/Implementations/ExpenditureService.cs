@@ -19,13 +19,17 @@ namespace PTS_BUSINESS.Services.Implementations
         private readonly IStoreItemRepository _storeItemRepository;
         private readonly IStoreAssetService _storeAssetService;
         private readonly IBudgetTrackingRepository _budgetTrackingRepository;
+        private readonly IEmployeeRepository _employeeRepository;
+        private readonly IDepartmentalExpenditureBudgetRepository _departmentalExpenditureBudgetRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
         public ExpenditureService(IExpenditureRepository expenditureRepository,
              IHttpContextAccessor httpContextAccessor,
              ITerminalRepository terminalRepository,
              IStoreItemRepository storeItemRepository,
              IBudgetTrackingRepository budgetTrackingRepository,
-             IStoreAssetService storeAssetService)
+             IStoreAssetService storeAssetService,
+             IEmployeeRepository employeeRepository,
+             IDepartmentalExpenditureBudgetRepository departmentalExpenditureBudgetRepository)
         {
             _expenditureRepository = expenditureRepository;
             _httpContextAccessor = httpContextAccessor;
@@ -33,6 +37,8 @@ namespace PTS_BUSINESS.Services.Implementations
             _storeItemRepository = storeItemRepository;
             _budgetTrackingRepository = budgetTrackingRepository;
             _storeAssetService = storeAssetService;
+            _employeeRepository = employeeRepository;
+            _departmentalExpenditureBudgetRepository = departmentalExpenditureBudgetRepository;
         }
         public async Task<bool> ActivateExpenditure(string id)
         {
@@ -77,7 +83,7 @@ namespace PTS_BUSINESS.Services.Implementations
                 expenditure.UnitPrice = model.UnitPrice != null ? model.UnitPrice : null;
                 expenditure.IsProcurementApproved = model.UnitPrice != null && model.Purpose != null ? true : false;
                 expenditure.IsAuditorCommented = model.UnitPrice != null && model.Purpose != null ? true : false;
-                expenditure.IsChairmanApproved = model.UnitPrice != null && model.UnitPrice.Value < 1000000 ? true : false;
+              //  expenditure.IsChairmanApproved = model.UnitPrice != null && model.UnitPrice.Value < 1000000 ? true : false;
                 expenditure.IsDDPCommented = model.UnitPrice != null && model.Purpose != null ? true : false;
                 expenditure.ItemQuantity = model.ItemQuantity != null ? model.ItemQuantity.Value : 1;
                 expenditure.TerminalId = model.TerminalId != null ? model.TerminalId : null;
@@ -314,7 +320,10 @@ namespace PTS_BUSINESS.Services.Implementations
             {
                 var expenditure = await _expenditureRepository.GetModelByIdAsync(id.Trim());
                 var budget = await _budgetTrackingRepository.FindBudget(expenditure.LastModified.Value);
-                budget.ActualAmount += expenditure.ItemQuantity.Value * expenditure.UnitPrice.Value;
+                var employee = await _employeeRepository.GetModelByUserIdAsync(expenditure.CreatorId);
+                var departmentExpenditureBudget = await _departmentalExpenditureBudgetRepository.GetModelByDepartmentIdAsync(employee.DepartmentId);
+                if(budget != null) budget.ActualAmount += expenditure.ItemQuantity.Value * expenditure.UnitPrice.Value;
+                if(departmentExpenditureBudget != null) departmentExpenditureBudget.ActualAmount += expenditure.ItemQuantity.Value * expenditure.UnitPrice.Value;
                 if (expenditure.TerminalName == null && expenditure.StoreItemName == null ||
                     expenditure.TerminalId == null && expenditure.StoreItemId == null)
                 {

@@ -113,41 +113,41 @@ namespace PTS_API.GateWay.Email
             string HtmlContent = email.Message;
             string TextContent = HtmlContent;
            // string Subject = "{{params.subject}}";
-           /* string ReplyToName = "Wazobia Agro Express";
+           string ReplyToName = "Pacesetter Transport Services";
             string ReplyToEmail = email.SenderEmail;
             SendSmtpEmailReplyTo ReplyTo = new SendSmtpEmailReplyTo(ReplyToEmail, ReplyToName);
-            string AttachmentUrl = null;
-            string stringInBase64 = "aGVsbG8gdGhpcyBpcyB0ZXN0";
-            byte[] Content = System.Convert.FromBase64String(stringInBase64);
-            string AttachmentName = "test.txt";
-            SendSmtpEmailAttachment AttachmentContent = new SendSmtpEmailAttachment(AttachmentUrl, Content, AttachmentName);
-            List<SendSmtpEmailAttachment> Attachment = new List<SendSmtpEmailAttachment>();
-            Attachment.Add(AttachmentContent);
-            JObject Headers = new JObject();
-            Headers.Add("Some-Custom-Name", "unique-id-1234");
-            long? TemplateId = null;
-            JObject Params = new JObject();
+            /*string AttachmentUrl = null;
+           string stringInBase64 = "aGVsbG8gdGhpcyBpcyB0ZXN0";
+           byte[] Content = System.Convert.FromBase64String(stringInBase64);
+           string AttachmentName = "test.txt";
+           SendSmtpEmailAttachment AttachmentContent = new SendSmtpEmailAttachment(AttachmentUrl, Content, AttachmentName);
+           List<SendSmtpEmailAttachment> Attachment = new List<SendSmtpEmailAttachment>();
+           Attachment.Add(AttachmentContent);
+           JObject Headers = new JObject();
+           Headers.Add("Some-Custom-Name", "unique-id-1234");
+           long? TemplateId = null;
+           JObject Params = new JObject();
 
-            //this is subtituted by the params.parameter
-            Params.Add("parameter", email.Message);
+           //this is subtituted by the params.parameter
+           Params.Add("parameter", email.Message);
 
-            //this is subtituted by the params.subbject
-            Params.Add("subject", email.Subject);
-            List<string> Tags = new List<string>();
-            Tags.Add("mytag");
-            SendSmtpEmailTo1 smtpEmailTo1 = new SendSmtpEmailTo1(ToEmail, ToName);
-            List<SendSmtpEmailTo1> To1 = new List<SendSmtpEmailTo1>();
-            To1.Add(smtpEmailTo1);
-            Dictionary<string, object> _parmas = new Dictionary<string, object>();
-            _parmas.Add("params", Params);
-            SendSmtpEmailReplyTo1 ReplyTo1 = new SendSmtpEmailReplyTo1(ReplyToEmail, ReplyToName);
-            SendSmtpEmailMessageVersions messageVersion = new SendSmtpEmailMessageVersions(To1, _parmas, Bcc, Cc, ReplyTo1, Subject);
-            List<SendSmtpEmailMessageVersions> messageVersiopns = new List<SendSmtpEmailMessageVersions>();
-            messageVersiopns.Add(messageVersion);*/
+           //this is subtituted by the params.subbject
+           Params.Add("subject", email.Subject);
+           List<string> Tags = new List<string>();
+           Tags.Add("mytag");
+           SendSmtpEmailTo1 smtpEmailTo1 = new SendSmtpEmailTo1(ToEmail, ToName);
+           List<SendSmtpEmailTo1> To1 = new List<SendSmtpEmailTo1>();
+           To1.Add(smtpEmailTo1);
+           Dictionary<string, object> _parmas = new Dictionary<string, object>();
+           _parmas.Add("params", Params);
+           SendSmtpEmailReplyTo1 ReplyTo1 = new SendSmtpEmailReplyTo1(ReplyToEmail, ReplyToName);
+           SendSmtpEmailMessageVersions messageVersion = new SendSmtpEmailMessageVersions(To1, _parmas, Bcc, Cc, ReplyTo1, Subject);
+           List<SendSmtpEmailMessageVersions> messageVersiopns = new List<SendSmtpEmailMessageVersions>();
+           messageVersiopns.Add(messageVersion);*/
             try
             {
 
-                var sendSmtpEmail = new SendSmtpEmail(Email, To, null, null, HtmlContent, TextContent, email.Subject);
+                var sendSmtpEmail = new SendSmtpEmail(Email, To, null, null, HtmlContent, TextContent, email.Subject,ReplyTo);
                 CreateSmtpEmail result = apiInstance.SendTransacEmail(sendSmtpEmail);
                 return true;
             }

@@ -21,13 +21,15 @@ namespace PTS_API.Controllers
         private readonly IAccountService _accountService;
         private readonly IJWTAuthentication _jwtAuth;
         private readonly IEmailSender _emailSender;
+        public readonly IConfiguration _configuration;
         private readonly IFluentEmail _fluentEmail;
-        public AccountController(IAccountService accountService, IJWTAuthentication jwtAuth, IEmailSender emailSender, IFluentEmail fluentEmail)
+        public AccountController(IConfiguration configuration,IAccountService accountService, IJWTAuthentication jwtAuth, IEmailSender emailSender, IFluentEmail fluentEmail)
         {
             _accountService = accountService;
             _jwtAuth = jwtAuth;
             _emailSender = emailSender;
             _fluentEmail = fluentEmail;
+            _configuration = configuration;
         }
 
 
@@ -330,9 +332,10 @@ namespace PTS_API.Controllers
                     if (result != null)
                     {
                         //sending the opt as mail to the user is the next step
-                         var mailModel = new EmailRequestModel
+                        //var companyMail = _configuration.GetValue<string>("CompanyMail");
+                        var mailModel = new EmailRequestModel
                          {
-                            SenderEmail = "tijaniadebayoabdullahi@gmail.com",
+                             SenderEmail = "tijaniadebayoabdullahi@gmail.com",
                              ReceiverEmail = result.Email,
                              ReceiverName = result.FirstName,
                              OTP = result.PasswordOTP,
@@ -340,7 +343,7 @@ namespace PTS_API.Controllers
                              Number = result.Phonenumber,
                              Message = FileReader.ReadFileForOTP(result.FirstName, result.PasswordOTP)
                           };
-                        await _emailSender.SendEmail1(mailModel);
+                        //await _emailSender.SendEmail1(mailModel);
                         // await _emailSender.SendSMS(mailModel);
                          await _emailSender.SendEmail(mailModel);
                         
