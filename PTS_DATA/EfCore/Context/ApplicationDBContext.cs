@@ -34,6 +34,7 @@ namespace PTS_DATA.EfCore.Context
         public DbSet<Leave> Leaves { get; set; }
         public DbSet<Complain> Complains { get; set; }
         public DbSet<Sales> Sales { get; set; }
+        public DbSet<Fuel> Fuels { get; set; }
         public DbSet<Expenditure> Expenditures { get; set; }
         public DbSet<StaffAssets> StaffAssets { get; set; }
         public DbSet<BudgetTracking> BudgetTrackings { get; set; }

@@ -182,6 +182,9 @@ namespace PTS_API
             builder.Services.AddScoped<IDepartmentalSaleRepository, DepartmentalSaleRepository>();
             builder.Services.AddScoped<IDepartmentalSaleService, DepartmentalSaleService>();
 
+            builder.Services.AddScoped<IFuelRepository, FuelRepository>();
+            builder.Services.AddScoped<IFuelService, FuelService>();
+
             builder.Services.AddScoped<IDepartmentalExpenditureBudgetRepository, DepartmentalExpenditureBudgetRepository>();
             builder.Services.AddScoped<IDepartmentalExpenditureBudgetService, DepartmentalExpenditureBudgetService>();
 
