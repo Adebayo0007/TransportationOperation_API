@@ -12,6 +12,6 @@ namespace PTS_CORE.Domain.DataTransferObject.RequestModel.Fuel
         [Required]
         public string VehicleRegNumber { get; set; }
         [Required]
-        public int Quantity { get; set; }
+        public double Quantity { get; set; }
     }
 }

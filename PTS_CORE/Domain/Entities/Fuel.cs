@@ -9,7 +9,7 @@ namespace PTS_CORE.Domain.Entities
     public class Fuel : BaseEntity
     {
         public string Id { get; set; } = Guid.NewGuid().ToString();
-        public int Quantity { get; set; }
+        public double Quantity { get; set; }
         public string VehicleRegNumber { get; set; }
     }
 }

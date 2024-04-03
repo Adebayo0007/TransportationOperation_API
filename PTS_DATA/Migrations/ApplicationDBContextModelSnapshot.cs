@@ -848,8 +848,8 @@ namespace PTS_DATA.Migrations
                     b.Property<string>("ModifierName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
+                    b.Property<double>("Quantity")
+                        .HasColumnType("float");
 
                     b.Property<string>("VehicleRegNumber")
                         .IsRequired()

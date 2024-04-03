@@ -9,7 +9,7 @@ namespace PTS_CORE.Domain.DataTransferObject.RequestModel.Fuel
     public class FuelResponseModel
     {
         public string Id { get; set; }
-        public int Quantity { get; set; }
+        public double Quantity { get; set; }
         public string VehicleRegNumber { get; set; }
         public bool IsDeleted { get; set; } = false;
         public DateTime? DeletedDate { get; set; }

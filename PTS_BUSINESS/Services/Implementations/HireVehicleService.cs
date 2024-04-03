@@ -24,17 +24,20 @@ namespace PTS_BUSINESS.Services.Implementations
         private readonly ISaleRepository _saleRepository;
         private readonly IEmployeeRepository _employeeRepository;
         private readonly IDepartmentalSaleRepository _departmentalSaleRepository;
+        private readonly IFuelRepository _fuelRepository;
         public HireVehicleService(IHireVehicleRepository hireVehicleRepository,
              IHttpContextAccessor httpContextAccessor,
              ISaleRepository saleRepository,
              IEmployeeRepository employeeRepository,
-             IDepartmentalSaleRepository departmentalSaleRepository)
+             IDepartmentalSaleRepository departmentalSaleRepository,
+             IFuelRepository fuelRepository)
         {
             _hireVehicleRepository = hireVehicleRepository;
             _httpContextAccessor = httpContextAccessor;
             _saleRepository = saleRepository;
             _employeeRepository = employeeRepository;
             _departmentalSaleRepository = departmentalSaleRepository;
+            _fuelRepository = fuelRepository;
         }
         public async  Task<bool> ActivateHireVehicle(string id)
         {
@@ -270,6 +273,14 @@ namespace PTS_BUSINESS.Services.Implementations
                 try
                 {
                     var hiredVehicle = await _hireVehicleRepository.GetModelByIdAsync(id.Trim());
+                    await _fuelRepository.CreateAsync(new Fuel
+                    {
+                        Quantity = hiredVehicle.Fuel,
+                        VehicleRegNumber = hiredVehicle.VehicleId,
+                        CreatorId = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? null,
+                        CreatorName = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.Email)?.Value ?? null,
+                        DateCreated = DateTime.Now
+                    });
 
                     if (hiredVehicle == null)
                         return false;
